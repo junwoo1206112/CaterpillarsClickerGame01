@@ -15,9 +15,10 @@ namespace ClickerGame.Core
         [SerializeField] private TouchCounter _touchCounter;
         [SerializeField] private TouchFunctionManager _touchFunctionManager;
 
-    [Header("Data")]
-    [SerializeField] private List<EvolutionStageDataModel> _evolutionStages;
+        [Header("Data")]
         [SerializeField] private TouchFunctionListSO _touchFunctionData;
+
+        private List<EvolutionStageDataModel> _evolutionStages;
 
         private void Awake()
         {
@@ -54,8 +55,40 @@ namespace ClickerGame.Core
             if (_touchFunctionManager == null)
                 _touchFunctionManager = FindFirstObjectByType<TouchFunctionManager>();
 
+            // EvolutionStageList.asset 자동 로드
+            LoadEvolutionData();
+
             SetupEvents();
             InitializeComponents();
+        }
+
+        private void LoadEvolutionData()
+        {
+            // Resources 폴더에서 자동 로드
+            var evolutionList = Resources.Load<EvolutionStageListSO>("EvolutionStageList");
+            
+            if (evolutionList != null && evolutionList.Stages != null)
+            {
+                _evolutionStages = evolutionList.Stages;
+                Debug.Log($"[GameplayManager] Loaded {_evolutionStages.Count} evolution stages from Resources");
+            }
+            else
+            {
+                // Resources 에 없으면 ScriptableObjects 폴더에서 직접 로드
+                string path = "Assets/ScriptableObjects/Character/EvolutionStageList.asset";
+                var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<EvolutionStageListSO>(path);
+                
+                if (asset != null && asset.Stages != null)
+                {
+                    _evolutionStages = asset.Stages;
+                    Debug.Log($"[GameplayManager] Loaded {_evolutionStages.Count} evolution stages from AssetDatabase");
+                }
+                else
+                {
+                    Debug.LogError("[GameplayManager] EvolutionStageList not found!");
+                    _evolutionStages = new List<EvolutionStageDataModel>();
+                }
+            }
         }
 
         private void SetupEvents()
