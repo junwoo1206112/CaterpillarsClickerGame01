@@ -603,7 +603,7 @@ MonoBehaviour:
     TouchRequired: 0
     SpritePath: 
   - ID: 2
-    Name: "\uBC88\uB371;"
+    Name: "\uBC88\uB370\uAE30"
     TouchRequired: 1000
     SpritePath: 
   - ID: 3
