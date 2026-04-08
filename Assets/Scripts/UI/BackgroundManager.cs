@@ -79,11 +79,7 @@ namespace ClickerGame.UI
         
         public void OnCloseClicked()
         {
-            var uiManager = FindFirstObjectByType<UIManager>();
-            if (uiManager != null)
-            {
-                uiManager.CloseAllWindows();
-            }
+            gameObject.SetActive(false);
         }
         
         private void Awake()

@@ -81,7 +81,7 @@ namespace ClickerGame.UI
 
         private void CloseWindow()
         {
-            UIManager.Instance?.CloseAllWindows();
+            gameObject.SetActive(false);
         }
 
         private void OnDestroy()

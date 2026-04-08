@@ -7,11 +7,6 @@ namespace ClickerGame.UI
     {
         public static UIManager Instance { get; private set; }
 
-        [Header("Windows")]
-        [SerializeField] private GameObject settingWindow;
-        [SerializeField] private GameObject characterCustomizeWindow;
-        [SerializeField] private GameObject backgroundWindow;
-
         [Header("TopBar Buttons")]
         [SerializeField] private Button settingButton;
         [SerializeField] private Button resetButton;
@@ -37,20 +32,7 @@ namespace ClickerGame.UI
         private void Initialize()
         {
             SetupButtons();
-            CloseAllWindows();
-            
-            // 버튼 강제 활성화
             EnableAllButtons();
-        }
-        
-        private void EnableAllButtons()
-        {
-            if (settingButton != null) settingButton.gameObject.SetActive(true);
-            if (resetButton != null) resetButton.gameObject.SetActive(true);
-            if (characterCustomizeButton != null) characterCustomizeButton.gameObject.SetActive(true);
-            if (backgroundButton != null) backgroundButton.gameObject.SetActive(true);
-            if (speedBoostButton != null) speedBoostButton.gameObject.SetActive(true);
-            if (itemButton != null) itemButton.gameObject.SetActive(true);
         }
 
         private void SetupButtons()
@@ -74,48 +56,47 @@ namespace ClickerGame.UI
                 itemButton.onClick.AddListener(OnItemButtonClicked);
         }
 
-        #region Window Management
-
-        public void CloseAllWindows()
+        private void EnableAllButtons()
         {
-            if (settingWindow != null) settingWindow.SetActive(false);
-            if (characterCustomizeWindow != null) characterCustomizeWindow.SetActive(false);
-            if (backgroundWindow != null) backgroundWindow.SetActive(false);
-            
-            // 버튼은 켜기
-            EnableAllButtons();
+            if (settingButton != null) settingButton.gameObject.SetActive(true);
+            if (resetButton != null) resetButton.gameObject.SetActive(true);
+            if (characterCustomizeButton != null) characterCustomizeButton.gameObject.SetActive(true);
+            if (backgroundButton != null) backgroundButton.gameObject.SetActive(true);
+            if (speedBoostButton != null) speedBoostButton.gameObject.SetActive(true);
+            if (itemButton != null) itemButton.gameObject.SetActive(true);
         }
+
+        #region Button Events
 
         public void OpenSettingWindow()
         {
-            CloseAllWindows();
-            if (settingWindow != null)
+            Debug.Log("[UIManager] Setting button clicked!");
+            var settingManager = FindFirstObjectByType<SettingManager>();
+            if (settingManager != null)
             {
-                settingWindow.SetActive(true);
+                settingManager.gameObject.SetActive(!settingManager.gameObject.activeSelf);
             }
         }
 
         public void OpenCharacterCustomizeWindow()
         {
-            CloseAllWindows();
-            if (characterCustomizeWindow != null)
+            Debug.Log("[UIManager] Character customize button clicked!");
+            var colorManager = FindFirstObjectByType<CharacterColorManager>();
+            if (colorManager != null)
             {
-                characterCustomizeWindow.SetActive(true);
+                colorManager.gameObject.SetActive(!colorManager.gameObject.activeSelf);
             }
         }
 
         public void OpenBackgroundWindow()
         {
-            CloseAllWindows();
-            if (backgroundWindow != null)
+            Debug.Log("[UIManager] Background button clicked!");
+            var bgManager = FindFirstObjectByType<BackgroundManager>();
+            if (bgManager != null)
             {
-                backgroundWindow.SetActive(true);
+                bgManager.gameObject.SetActive(!bgManager.gameObject.activeSelf);
             }
         }
-
-        #endregion
-
-        #region Button Events
 
         public void OnResetClicked()
         {
@@ -140,16 +121,13 @@ namespace ClickerGame.UI
         {
             Debug.Log("[UIManager] Item button clicked!");
             
-            // 터치 횟수 100~500 랜덤 증가
             int randomCount = Random.Range(100, 501);
             Debug.Log($"[UIManager] Random count generated: {randomCount}");
             
             var touchCounter = FindFirstObjectByType<Gameplay.TouchCounter>();
-            Debug.Log($"[UIManager] TouchCounter found: {touchCounter != null}");
             
             if (touchCounter != null)
             {
-                Debug.Log($"[UIManager] Starting loop to add {randomCount} touches...");
                 for (int i = 0; i < randomCount; i++)
                 {
                     touchCounter.AddTouch();
