@@ -96,6 +96,7 @@ namespace ClickerGame.UI
             if (function == null)
             {
                 Debug.LogError($"[TouchFunctionList] Function {functionId} not found!");
+                Debug.LogError($"[TouchFunctionList] Available IDs: {string.Join(", ", allFunctions.ConvertAll(f => f.ID))}");
                 return;
             }
             
@@ -116,11 +117,15 @@ namespace ClickerGame.UI
             newFunction.IsActive = true;
             activeFunctions.Add(newFunction);
             
+            Debug.Log($"[TouchFunctionList] Added {function.Name} (ID: {function.ID}, Effect: {function.Effect})");
+            Debug.Log($"[TouchFunctionList] Active functions: {activeFunctions.Count}");
+            foreach (var af in activeFunctions)
+            {
+                Debug.Log($"  - {af.Name} (Effect: {af.Effect})");
+            }
+            
             ApplyFunctionEffect(newFunction);
-            
-            Debug.Log($"[TouchFunctionList] Added {function.Name} for {function.Cost} points");
             OnFunctionAdded?.Invoke(functionId);
-            
             SaveToExcel();
         }
         
