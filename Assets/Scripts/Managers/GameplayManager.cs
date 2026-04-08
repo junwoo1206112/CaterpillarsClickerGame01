@@ -86,8 +86,24 @@ namespace ClickerGame.Core
             InitializeComponents();
         }
 
-        private void LoadEvolutionData()
+private void LoadEvolutionData()
         {
+            // DataInitializer 에서 데이터 가져오기
+            if (DataInitializer.Instance != null)
+            {
+                var container = DataInitializer.Instance.Container;
+                if (container.TryResolve<DataManager>(out var dataManager))
+                {
+                    if (dataManager.Characters != null && dataManager.Characters.Count > 0)
+                    {
+                        _evolutionStages = dataManager.Characters;
+                        Debug.Log($"[GameplayManager] Loaded {_evolutionStages.Count} evolution stages from DataManager");
+                        return;
+                    }
+                }
+            }
+
+            // Resources 폴더에서 로드 (백업)
             var evolutionList = Resources.Load<EvolutionStageListSO>("EvolutionStageList");
             
             if (evolutionList != null && evolutionList.Stages != null)
