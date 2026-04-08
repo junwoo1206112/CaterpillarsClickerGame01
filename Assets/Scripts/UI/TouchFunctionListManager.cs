@@ -26,18 +26,22 @@ namespace ClickerGame.UI
         
         public int PointsPerClick => CalculatePointsPerClick();
         
-        private int CalculatePointsPerClick()
+private int CalculatePointsPerClick()
         {
             int basePoints = 1;
             float multiplier = 1f;
             
+            Debug.Log($"[PointsPerClick] Checking {activeFunctions.Count} active functions");
+            
             foreach (var function in activeFunctions)
             {
+                Debug.Log($"[PointsPerClick] Function: {function.Name}, Effect: {function.Effect}");
+                
                 switch (function.Effect)
                 {
                     case "DoubleClick":
                         multiplier *= 2f;
-                        Debug.Log($"[PointsPerClick] DoubleClick active: x{multiplier}");
+                        Debug.Log($"[PointsPerClick] DoubleClick applied! Multiplier: {multiplier}");
                         break;
                     case "Critical":
                     case "SuperCritical":
@@ -45,12 +49,13 @@ namespace ClickerGame.UI
                     case "SpeedBoost":
                         break;
                     default:
+                        Debug.LogWarning($"[PointsPerClick] Unknown effect: {function.Effect}");
                         break;
                 }
             }
             
             int result = Mathf.RoundToInt(basePoints * multiplier);
-            Debug.Log($"[PointsPerClick] Calculated: {result} (base: {basePoints}, multiplier: {multiplier}, active: {activeFunctions.Count})");
+            Debug.Log($"[PointsPerClick] Final: {result} (base: {basePoints}, multiplier: {multiplier})");
             return result;
         }
         
