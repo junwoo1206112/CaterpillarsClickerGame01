@@ -1264,12 +1264,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 801673070}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1925.9999, y: -591.59064, z: 0}
+  m_LocalScale: {x: 2.1357062, y: 2.1357062, z: 2.1357062}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 933410300}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &811876074
 GameObject:
@@ -1470,6 +1470,7 @@ RectTransform:
   - {fileID: 475596809}
   - {fileID: 2006960637}
   - {fileID: 36078056}
+  - {fileID: 801673072}
   m_Father: {fileID: 1388693409}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
@@ -1527,7 +1528,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1fbcb9198983cd49af07ca784e07566, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClickerGame.UI.TouchFunctionListManager
-  _touchFunctionManager: {fileID: 0}
+  _touchFunctionManager: {fileID: 801673071}
   allFunctions: []
   activeFunctions: []
 --- !u!114 &933410304
@@ -1545,7 +1546,6 @@ MonoBehaviour:
   contentParent: {fileID: 794937605}
   itemPrefab: {fileID: 4770667891139250823, guid: fa39d67807a8d1045b640e99f916245f, type: 3}
   scrollRect: {fileID: 2006960638}
-  closeButton: {fileID: 0}
   pointsText: {fileID: 36078057}
 --- !u!1 &1122328175
 GameObject:
@@ -2975,7 +2975,6 @@ SceneRoots:
   - {fileID: 830340375}
   - {fileID: 1382603003}
   - {fileID: 1503185953}
-  - {fileID: 801673072}
   - {fileID: 2023652520}
   - {fileID: 1388693409}
   - {fileID: 1549149063}
