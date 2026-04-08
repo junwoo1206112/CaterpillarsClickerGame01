@@ -13,21 +13,9 @@ MonoBehaviour:
   m_Name: ItemList
   m_EditorClassIdentifier: Assembly-CSharp:ClickerGame.Data.Models:ItemListSO
   Items:
-  - ID: 1
-    Name: "\uC810\uC218\uBD80\uC2A4\uD130"
+  - ID: ITEM_001
+    Name: +50 Clicks
     Effect: AddScore
-    Value: 10
+    Value: 50
     Duration: 0
-    IconPath: Items/ScoreBooster
-  - ID: 2
-    Name: "\uC624\uD1A0\uD074\uB9AD"
-    Effect: AutoClick
-    Value: 1
-    Duration: 30
-    IconPath: Items/AutoClick
-  - ID: 3
-    Name: "\uBC30\uC728\uC99D\uAC00"
-    Effect: Multiplier
-    Value: 2
-    Duration: 60
-    IconPath: Items/Multiplier
+    IconPath: Assets/Sprites/icon_item_001

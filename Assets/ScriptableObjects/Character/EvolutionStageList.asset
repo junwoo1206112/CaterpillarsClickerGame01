@@ -13,15 +13,7 @@ MonoBehaviour:
   m_Name: EvolutionStageList
   m_EditorClassIdentifier: Assembly-CSharp:ClickerGame.Data.Models:EvolutionStageListSO
   Stages:
-  - ID: 1
-    Name: "\uC560\uBC8C\uB808"
+  - ID: CHAR_001
+    Name: Caterpillar
     TouchRequired: 0
-    SpritePath: Sprites/Caterpillar
-  - ID: 2
-    Name: "\uBC88\uB370\uAE30"
-    TouchRequired: 1000
-    SpritePath: Sprites/Pupa
-  - ID: 3
-    Name: "\uB098\uBE44"
-    TouchRequired: 3000
-    SpritePath: Sprites/Butterfly
+    SpritePath: Assets/Sprites/character_caterpillar

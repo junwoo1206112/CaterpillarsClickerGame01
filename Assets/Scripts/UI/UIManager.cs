@@ -81,6 +81,9 @@ namespace ClickerGame.UI
             if (settingWindow != null) settingWindow.SetActive(false);
             if (characterCustomizeWindow != null) characterCustomizeWindow.SetActive(false);
             if (backgroundWindow != null) backgroundWindow.SetActive(false);
+            
+            // 버튼은 켜기
+            EnableAllButtons();
         }
 
         public void OpenSettingWindow()

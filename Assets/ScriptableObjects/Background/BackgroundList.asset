@@ -13,15 +13,7 @@ MonoBehaviour:
   m_Name: BackgroundList
   m_EditorClassIdentifier: Assembly-CSharp:ClickerGame.Data.Models:BackgroundListSO
   Backgrounds:
-  - ID: 1
-    Name: "\uAE30\uBCF8\uBC30\uACBD"
-    SpritePath: Backgrounds/Default
+  - ID: BG_001
+    Name: Forest
+    SpritePath: Assets/Sprites/background_forest
     UnlockScore: 0
-  - ID: 2
-    Name: "\uC232"
-    SpritePath: Backgrounds/Forest
-    UnlockScore: 500
-  - ID: 3
-    Name: "\uAF43\uBC2D"
-    SpritePath: Backgrounds/FlowerField
-    UnlockScore: 2000
