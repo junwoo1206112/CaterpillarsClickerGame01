@@ -36,16 +36,16 @@ namespace ClickerGame.UI
             if (_data == null) return;
             
             if (nameText != null)
-                nameText.text = _data.name;
+                nameText.text = _data.Name;
             
             if (descriptionText != null)
-                descriptionText.text = _data.description;
+                descriptionText.text = _data.Description;
             
             if (costText != null)
-                costText.text = $"{_data.cost} pts";
+                costText.text = $"{_data.Cost} pts";
             
             if (levelText != null)
-                levelText.text = $"Lv. {_data.level}";
+                levelText.text = $"Lv. {_data.Level}";
             
             if (pointsText != null)
             {
@@ -70,7 +70,7 @@ namespace ClickerGame.UI
                 {
                     if (TouchFunctionListManager.Instance != null)
                     {
-                        TouchFunctionListManager.Instance.AddFunction(_data.id);
+                        TouchFunctionListManager.Instance.AddFunction(_data.ID);
                     }
                 });
             }
@@ -82,7 +82,7 @@ namespace ClickerGame.UI
                 {
                     if (TouchFunctionListManager.Instance != null)
                     {
-                        TouchFunctionListManager.Instance.RemoveFunction(_data.id);
+                        TouchFunctionListManager.Instance.RemoveFunction(_data.ID);
                     }
                 });
             }

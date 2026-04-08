@@ -53,31 +53,31 @@ namespace ClickerGame.UI
         
         public void AddFunction(string functionId)
         {
-            var function = allFunctions.Find(f => f.id == functionId);
+            var function = allFunctions.Find(f => f.ID == functionId);
             if (function == null)
             {
                 Debug.LogError($"[TouchFunctionList] Function {functionId} not found!");
                 return;
             }
             
-            if (!CanAfford(function.cost))
+            if (!CanAfford(function.Cost))
             {
-                Debug.LogWarning($"[TouchFunctionList] Not enough points! Need {function.cost}, have {_touchPoints}");
+                Debug.LogWarning($"[TouchFunctionList] Not enough points! Need {function.Cost}, have {_touchPoints}");
                 return;
             }
             
-            if (activeFunctions.Find(f => f.id == functionId) != null)
+            if (activeFunctions.Find(f => f.ID == functionId) != null)
             {
                 Debug.LogWarning($"[TouchFunctionList] Function {functionId} already active!");
                 return;
             }
             
-            SpendPoints(function.cost);
+            SpendPoints(function.Cost);
             var newFunction = function.Clone();
-            newFunction.isActive = true;
+            newFunction.IsActive = true;
             activeFunctions.Add(newFunction);
             
-            Debug.Log($"[TouchFunctionList] Added {function.name} for {function.cost} points");
+            Debug.Log($"[TouchFunctionList] Added {function.Name} for {function.Cost} points");
             OnFunctionAdded?.Invoke(functionId);
             
             SaveToExcel();
@@ -85,7 +85,7 @@ namespace ClickerGame.UI
         
         public void RemoveFunction(string functionId)
         {
-            var function = activeFunctions.Find(f => f.id == functionId);
+            var function = activeFunctions.Find(f => f.ID == functionId);
             if (function == null)
             {
                 Debug.LogWarning($"[TouchFunctionList] Function {functionId} not active!");
@@ -93,7 +93,7 @@ namespace ClickerGame.UI
             }
             
             activeFunctions.Remove(function);
-            Debug.Log($"[TouchFunctionList] Removed {function.name}");
+            Debug.Log($"[TouchFunctionList] Removed {function.Name}");
             OnFunctionRemoved?.Invoke(functionId);
             
             SaveToExcel();
@@ -101,7 +101,7 @@ namespace ClickerGame.UI
         
         public bool IsFunctionActive(string functionId)
         {
-            return activeFunctions.Find(f => f.id == functionId) != null;
+            return activeFunctions.Find(f => f.ID == functionId) != null;
         }
         
         private void LoadFromExcel()
@@ -115,13 +115,13 @@ namespace ClickerGame.UI
                 {
                     allFunctions.Add(new TouchFunctionData
                     {
-                        id = func.FunctionName,
-                        name = func.FunctionName,
-                        description = GetDescription(func.FunctionType),
-                        cost = GetCost(func.FunctionType),
-                        level = 1,
-                        effect = func.FunctionType,
-                        isActive = false
+                        ID = func.FunctionName,
+                        Name = func.FunctionName,
+                        Description = GetDescription(func.FunctionType),
+                        Cost = GetCost(func.FunctionType),
+                        Level = 1,
+                        Effect = func.FunctionType,
+                        IsActive = false
                     });
                 }
                 Debug.Log($"[TouchFunctionList] Loaded {allFunctions.Count} functions from Excel");
@@ -136,11 +136,11 @@ namespace ClickerGame.UI
         {
             allFunctions = new List<TouchFunctionData>
             {
-                new TouchFunctionData { id = "critical", name = "크리티컬", description = "10% 확률로 2 배", cost = 50, level = 1, effect = "Critical", isActive = false },
-                new TouchFunctionData { id = "speed", name = "스피드부스트", description = "연타 속도 증가", cost = 100, level = 1, effect = "SpeedBoost", isActive = false },
-                new TouchFunctionData { id = "bonus", name = "보너스 터치", description = "50 회마다 +10", cost = 150, level = 1, effect = "Bonus", isActive = false },
-                new TouchFunctionData { id = "super_critical", name = "슈퍼크리티컬", description = "20% 확률로 3 배", cost = 200, level = 1, effect = "SuperCritical", isActive = false },
-                new TouchFunctionData { id = "double_click", name = "더블클릭", description = "항상 2 배 클릭", cost = 300, level = 1, effect = "DoubleClick", isActive = false }
+                new TouchFunctionData { ID = "critical", Name = "크리티컬", Description = "10% 확률로 2 배", Cost = 50, Level = 1, Effect = "Critical", IsActive = false },
+                new TouchFunctionData { ID = "speed", Name = "스피드부스트", Description = "연타 속도 증가", Cost = 100, Level = 1, Effect = "SpeedBoost", IsActive = false },
+                new TouchFunctionData { ID = "bonus", Name = "보너스 터치", Description = "50 회마다 +10", Cost = 150, Level = 1, Effect = "Bonus", IsActive = false },
+                new TouchFunctionData { ID = "super_critical", Name = "슈퍼크리티컬", Description = "20% 확률로 3 배", Cost = 200, Level = 1, Effect = "SuperCritical", IsActive = false },
+                new TouchFunctionData { ID = "double_click", Name = "더블클릭", Description = "항상 2 배 클릭", Cost = 300, Level = 1, Effect = "DoubleClick", IsActive = false }
             };
             Debug.Log($"[TouchFunctionList] Created {allFunctions.Count} default functions");
         }

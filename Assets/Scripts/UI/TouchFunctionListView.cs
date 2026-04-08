@@ -59,7 +59,7 @@ namespace ClickerGame.UI
             }
             
             var newItem = Instantiate(itemPrefab, contentParent);
-            var isActive = TouchFunctionListManager.Instance.IsFunctionActive(data.id);
+            var isActive = TouchFunctionListManager.Instance.IsFunctionActive(data.ID);
             newItem.Initialize(data);
             newItem.SetActiveState(isActive);
             

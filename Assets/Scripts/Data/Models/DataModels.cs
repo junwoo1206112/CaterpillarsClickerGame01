@@ -35,11 +35,36 @@ namespace ClickerGame.Data.Models
     public class TouchFunctionData
     {
         public string ID;
+        public string Name;
+        public string Description;
+        public int Cost;
+        public int Level;
+        public string Effect;
+        public bool IsActive;
         public int TriggerCount;
         public string EffectType;
         public float Multiplier;
         public float Duration;
         public float Cooldown;
+        
+        public TouchFunctionData Clone()
+        {
+            return new TouchFunctionData
+            {
+                ID = this.ID,
+                Name = this.Name,
+                Description = this.Description,
+                Cost = this.Cost,
+                Level = this.Level,
+                Effect = this.Effect,
+                IsActive = this.IsActive,
+                TriggerCount = this.TriggerCount,
+                EffectType = this.EffectType,
+                Multiplier = this.Multiplier,
+                Duration = this.Duration,
+                Cooldown = this.Cooldown
+            };
+        }
     }
 
     [Serializable]
