@@ -19,6 +19,7 @@ namespace ClickerGame.Core
         [SerializeField] private TouchFunctionListSO _touchFunctionData;
 
         private List<EvolutionStageDataModel> _evolutionStages;
+        private DataManager _dataManager;
 
         private void Awake()
         {
@@ -31,7 +32,32 @@ namespace ClickerGame.Core
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
+            RegisterServices();
             Initialize();
+        }
+
+        private void RegisterServices()
+        {
+            var container = GameContainer.Instance;
+
+            container.Register<GameplayManager>(this);
+
+            if (_touchCounter != null)
+            {
+                container.Register<TouchCounter>(_touchCounter);
+            }
+
+            if (_touchFunctionManager != null)
+            {
+                container.Register<TouchFunctionManager>(_touchFunctionManager);
+            }
+
+            if (GameContainer.Instance.TryResolve<DataManager>(out var dataManager))
+            {
+                _dataManager = dataManager;
+            }
+
+            Debug.Log("[GameplayManager] Services registered to DI Container");
         }
 
         public void Initialize()
@@ -42,7 +68,6 @@ namespace ClickerGame.Core
             if (_evolution == null)
                 _evolution = FindFirstObjectByType<CharacterEvolution>();
 
-            // TouchCounter 가 없으면 GameplayManager 에 자동 추가
             if (_touchCounter == null)
             {
                 _touchCounter = GetComponent<TouchCounter>();
@@ -55,7 +80,6 @@ namespace ClickerGame.Core
             if (_touchFunctionManager == null)
                 _touchFunctionManager = FindFirstObjectByType<TouchFunctionManager>();
 
-            // EvolutionStageList.asset 자동 로드
             LoadEvolutionData();
 
             SetupEvents();
@@ -64,7 +88,6 @@ namespace ClickerGame.Core
 
         private void LoadEvolutionData()
         {
-            // Resources 폴더에서만 로드 (빌드 호환)
             var evolutionList = Resources.Load<EvolutionStageListSO>("EvolutionStageList");
             
             if (evolutionList != null && evolutionList.Stages != null)
@@ -86,16 +109,14 @@ namespace ClickerGame.Core
                 _clickHandler.OnClick.AddListener(OnCharacterClicked);
             }
 
-            // TouchCounter 이벤트로 진화 확인
             if (_touchCounter != null)
             {
                 _touchCounter.OnTouchCountChanged.AddListener(OnTouchCountChanged);
             }
         }
 
-private void InitializeComponents()
+        private void InitializeComponents()
         {
-            // TouchFunctionListManager 초기화 보장
             var listManager = ClickerGame.UI.TouchFunctionListManager.Instance;
             if (listManager == null)
             {
@@ -125,13 +146,11 @@ private void InitializeComponents()
 
         private void OnTouchCountChanged(int count)
         {
-            // 진화 확인
             if (_evolution != null)
             {
                 _evolution.SetTouchCount(count);
             }
 
-            // 터치 효과 처리
             if (_touchFunctionManager != null)
             {
                 _touchFunctionManager.ProcessTouch(count);
@@ -156,6 +175,14 @@ private void InitializeComponents()
 
             if (_evolution != null)
                 _evolution.ResetEvolution();
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
         }
     }
 }

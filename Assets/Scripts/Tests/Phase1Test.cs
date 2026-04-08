@@ -12,8 +12,6 @@ namespace ClickerGame.Tests
         [TextArea]
         public string testLog = "";
 
-        private GameContainer _container;
-
         private void Start()
         {
             RunAllTests();
@@ -24,8 +22,10 @@ namespace ClickerGame.Tests
             testLog = "=== Phase 1 Test Started ===\n\n";
 
             Test_DIContainer();
+            Test_DIContainerSingleton();
             Test_DataService();
             Test_ExcelConverter();
+            Test_DIContainerResolve();
 
             testLog += "\n=== All Tests Completed ===";
             Debug.Log(testLog);
@@ -37,25 +37,48 @@ namespace ClickerGame.Tests
 
             try
             {
-                _container = new GameContainer();
+                var container = GameContainer.Instance;
 
-                var dataService = new ExcelDataService<EvolutionStageDataModel>();
-                _container.Register<IDataService<List<EvolutionStageDataModel>>, ExcelDataService<EvolutionStageDataModel>>(dataService);
-
-                var resolved = _container.Resolve<IDataService<List<EvolutionStageDataModel>>>();
-
-                if (resolved != null)
+                if (container != null)
                 {
+                    testLog += "✓ DI Container Instance exists\n";
                     testLog += "✓ DI Container: PASS\n";
                 }
                 else
                 {
-                    testLog += "✗ DI Container: FAIL (resolved is null)\n";
+                    testLog += "✗ DI Container Instance is null\n";
                 }
             }
             catch (System.Exception ex)
             {
                 testLog += $"✗ DI Container: FAIL ({ex.Message})\n";
+            }
+
+            testLog += "\n";
+        }
+
+        private void Test_DIContainerSingleton()
+        {
+            testLog += "[TEST] DI Container Singleton...\n";
+
+            try
+            {
+                var container1 = GameContainer.Instance;
+                var container2 = GameContainer.Instance;
+
+                if (container1 == container2)
+                {
+                    testLog += "✓ Singleton pattern works\n";
+                    testLog += "✓ Both references point to same instance\n";
+                }
+                else
+                {
+                    testLog += "✗ Singleton pattern failed\n";
+                }
+            }
+            catch (System.Exception ex)
+            {
+                testLog += $"✗ DI Container Singleton: FAIL ({ex.Message})\n";
             }
 
             testLog += "\n";
@@ -107,6 +130,35 @@ namespace ClickerGame.Tests
             testLog += "\n";
         }
 
+        private void Test_DIContainerResolve()
+        {
+            testLog += "[TEST] DI Container Resolve...\n";
+
+            try
+            {
+                var container = GameContainer.Instance;
+
+                container.Register<ITestService, TestService>(new TestService());
+
+                if (container.TryResolve<ITestService>(out var service))
+                {
+                    testLog += "✓ Service resolved from container\n";
+                    testLog += $"✓ Service message: {service.GetMessage()}\n";
+                    testLog += "✓ DI Container Resolve: PASS\n";
+                }
+                else
+                {
+                    testLog += "✗ Failed to resolve service\n";
+                }
+            }
+            catch (System.Exception ex)
+            {
+                testLog += $"✗ DI Container Resolve: FAIL ({ex.Message})\n";
+            }
+
+            testLog += "\n";
+        }
+
         private void OnGUI()
         {
             GUILayout.BeginArea(new Rect(10, 10, 600, 800));
@@ -125,6 +177,16 @@ namespace ClickerGame.Tests
 
             GUILayout.EndVertical();
             GUILayout.EndArea();
+        }
+
+        private interface ITestService
+        {
+            string GetMessage();
+        }
+
+        private class TestService : ITestService
+        {
+            public string GetMessage() => "Test Service Working!";
         }
     }
 }
