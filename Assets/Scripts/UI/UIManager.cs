@@ -38,6 +38,19 @@ namespace ClickerGame.UI
         {
             SetupButtons();
             CloseAllWindows();
+            
+            // 버튼 강제 활성화
+            EnableAllButtons();
+        }
+        
+        private void EnableAllButtons()
+        {
+            if (settingButton != null) settingButton.gameObject.SetActive(true);
+            if (resetButton != null) resetButton.gameObject.SetActive(true);
+            if (characterCustomizeButton != null) characterCustomizeButton.gameObject.SetActive(true);
+            if (backgroundButton != null) backgroundButton.gameObject.SetActive(true);
+            if (speedBoostButton != null) speedBoostButton.gameObject.SetActive(true);
+            if (itemButton != null) itemButton.gameObject.SetActive(true);
         }
 
         private void SetupButtons()
