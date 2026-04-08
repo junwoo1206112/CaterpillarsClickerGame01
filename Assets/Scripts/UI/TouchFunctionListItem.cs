@@ -21,6 +21,13 @@ namespace ClickerGame.UI
         private void Awake()
         {
             SetupButtons();
+            
+            // Image 의 Raycast Target 끄기 (버튼 클릭 통과)
+            var image = GetComponent<Image>();
+            if (image != null)
+            {
+                image.raycastTarget = false;
+            }
         }
         
         private void Update()
