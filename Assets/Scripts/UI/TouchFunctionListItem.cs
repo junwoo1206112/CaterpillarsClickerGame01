@@ -1,64 +1,96 @@
 using UnityEngine;
 using UnityEngine.UI;
+using ClickerGame.Data.Models;
 
 namespace ClickerGame.UI
 {
     public class TouchFunctionListItem : MonoBehaviour
     {
         [Header("UI References")]
-        [SerializeField] private Text functionNameText;
-        [SerializeField] private Text descriptionText;
-        [SerializeField] private Text levelText;
-        [SerializeField] private Button addButton;
-        [SerializeField] private Button removeButton;
-
-        private string _functionName;
-        private string _description;
-        private int _level;
-
-        public System.Action<string> OnAddClicked;
-        public System.Action<string> OnRemoveClicked;
-
-        public void Initialize(string name, string description, int level)
+        public Text nameText;
+        public Text descriptionText;
+        public Text costText;
+        public Text levelText;
+        public Text pointsText;
+        public Button addButton;
+        public Button removeButton;
+        
+        private TouchFunctionData _data;
+        private bool _isActive = false;
+        
+        public void Initialize(TouchFunctionData data)
         {
-            _functionName = name;
-            _description = description;
-            _level = level;
-
-            if (functionNameText != null)
-                functionNameText.text = name;
-
-            if (descriptionText != null)
-                descriptionText.text = description;
-
-            if (levelText != null)
-                levelText.text = $"Lv. {level}";
-
+            _data = data;
+            UpdateUI();
             SetupButtons();
         }
-
+        
+        public void SetActiveState(bool isActive)
+        {
+            _isActive = isActive;
+            UpdateUI();
+        }
+        
+        private void UpdateUI()
+        {
+            if (_data == null) return;
+            
+            if (nameText != null)
+                nameText.text = _data.name;
+            
+            if (descriptionText != null)
+                descriptionText.text = _data.description;
+            
+            if (costText != null)
+                costText.text = $"{_data.cost} pts";
+            
+            if (levelText != null)
+                levelText.text = $"Lv. {_data.level}";
+            
+            if (pointsText != null)
+            {
+                var listManager = TouchFunctionListManager.Instance;
+                if (listManager != null)
+                    pointsText.text = $"Points: {listManager.TouchPoints}";
+            }
+            
+            if (addButton != null)
+                addButton.gameObject.SetActive(!_isActive);
+            
+            if (removeButton != null)
+                removeButton.gameObject.SetActive(_isActive);
+        }
+        
         private void SetupButtons()
         {
             if (addButton != null)
             {
                 addButton.onClick.RemoveAllListeners();
-                addButton.onClick.AddListener(() => OnAddClicked?.Invoke(_functionName));
+                addButton.onClick.AddListener(() =>
+                {
+                    if (TouchFunctionListManager.Instance != null)
+                    {
+                        TouchFunctionListManager.Instance.AddFunction(_data.id);
+                    }
+                });
             }
-
+            
             if (removeButton != null)
             {
                 removeButton.onClick.RemoveAllListeners();
-                removeButton.onClick.AddListener(() => OnRemoveClicked?.Invoke(_functionName));
+                removeButton.onClick.AddListener(() =>
+                {
+                    if (TouchFunctionListManager.Instance != null)
+                    {
+                        TouchFunctionListManager.Instance.RemoveFunction(_data.id);
+                    }
+                });
             }
         }
-
-        public void SetInteractable(bool interactable)
+        
+        public void Refresh()
         {
-            if (addButton != null)
-                addButton.interactable = interactable;
-
-            if (removeButton != null)
-                removeButton.interactable = interactable;
+            UpdateUI();
         }
     }
 }
