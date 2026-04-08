@@ -81,10 +81,10 @@ namespace ClickerGame.UI
         public void OpenCharacterCustomizeWindow()
         {
             Debug.Log("[UIManager] Character customize button clicked!");
-            var colorManager = FindFirstObjectByType<CharacterColorManager>();
-            if (colorManager != null)
+            var customizeManager = FindFirstObjectByType<CharacterCustomizeManager>();
+            if (customizeManager != null)
             {
-                colorManager.gameObject.SetActive(!colorManager.gameObject.activeSelf);
+                customizeManager.gameObject.SetActive(!customizeManager.gameObject.activeSelf);
             }
         }
 
