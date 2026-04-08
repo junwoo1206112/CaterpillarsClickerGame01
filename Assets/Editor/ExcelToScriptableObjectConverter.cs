@@ -15,7 +15,7 @@ namespace ClickerGame.EditorTools
         private const string BackgroundSOPath = "Assets/ScriptableObjects/Background";
         private const string ItemSOPath = "Assets/ScriptableObjects/Item";
         private const string ConfigSOPath = "Assets/ScriptableObjects/Config";
-        private const string TouchFunctionSOPath = "Assets/ScriptableObjects/TouchFunction";
+        private const string TouchFunctionSOPath = "Assets/Resources";
 
         public void ConvertAll(string excelPath)
         {

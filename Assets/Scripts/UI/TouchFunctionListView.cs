@@ -7,21 +7,45 @@ namespace ClickerGame.UI
 {
     public class TouchFunctionListView : MonoBehaviour
     {
-        [Header("References")]
-        public Transform contentParent;
-        public TouchFunctionListItem itemPrefab;
-        public ScrollRect scrollRect;
+        [Header("UI References")]
+        [SerializeField] private Transform contentParent;
+        [SerializeField] private TouchFunctionListItem itemPrefab;
+        [SerializeField] private ScrollRect scrollRect;
+        [SerializeField] private Button closeButton;
+        [SerializeField] private Text pointsText;
         
         private List<TouchFunctionListItem> _items = new();
         
-        private void Start()
+        private void Awake()
         {
+            SetupButtons();
+            RefreshList();
+        }
+        
+        private void Update()
+        {
+            UpdatePointsDisplay();
+        }
+        
+        private void UpdatePointsDisplay()
+        {
+            if (pointsText != null && TouchFunctionListManager.Instance != null)
+            {
+                int perClick = TouchFunctionListManager.Instance.PointsPerClick;
+                pointsText.text = $"+{perClick}/클릭";
+            }
+        }
+        
+        private void SetupButtons()
+        {
+            if (closeButton != null)
+                closeButton.onClick.AddListener(CloseWindow);
+            
             if (TouchFunctionListManager.Instance != null)
             {
                 TouchFunctionListManager.Instance.OnFunctionAdded += (id) => RefreshList();
                 TouchFunctionListManager.Instance.OnFunctionRemoved += (id) => RefreshList();
             }
-            RefreshList();
         }
         
         public void RefreshList()
@@ -66,8 +90,24 @@ namespace ClickerGame.UI
             _items.Add(newItem);
         }
         
+        private void CloseWindow()
+        {
+            var uiManager = FindFirstObjectByType<UIManager>();
+            if (uiManager != null)
+            {
+                uiManager.CloseAllWindows();
+            }
+            else
+            {
+                gameObject.SetActive(false);
+            }
+        }
+        
         private void OnDestroy()
         {
+            if (closeButton != null)
+                closeButton.onClick.RemoveListener(CloseWindow);
+            
             if (TouchFunctionListManager.Instance != null)
             {
                 TouchFunctionListManager.Instance.OnFunctionAdded -= (id) => RefreshList();

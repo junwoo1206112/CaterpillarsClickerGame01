@@ -64,7 +64,7 @@ namespace ClickerGame.Core
 
         private void LoadEvolutionData()
         {
-            // Resources 폴더에서 자동 로드
+            // Resources 폴더에서만 로드 (빌드 호환)
             var evolutionList = Resources.Load<EvolutionStageListSO>("EvolutionStageList");
             
             if (evolutionList != null && evolutionList.Stages != null)
@@ -74,20 +74,8 @@ namespace ClickerGame.Core
             }
             else
             {
-                // Resources 에 없으면 ScriptableObjects 폴더에서 직접 로드
-                string path = "Assets/ScriptableObjects/Character/EvolutionStageList.asset";
-                var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<EvolutionStageListSO>(path);
-                
-                if (asset != null && asset.Stages != null)
-                {
-                    _evolutionStages = asset.Stages;
-                    Debug.Log($"[GameplayManager] Loaded {_evolutionStages.Count} evolution stages from AssetDatabase");
-                }
-                else
-                {
-                    Debug.LogError("[GameplayManager] EvolutionStageList not found!");
-                    _evolutionStages = new List<EvolutionStageDataModel>();
-                }
+                Debug.LogError("[GameplayManager] EvolutionStageList not found in Resources!");
+                _evolutionStages = new List<EvolutionStageDataModel>();
             }
         }
 
@@ -105,18 +93,27 @@ namespace ClickerGame.Core
             }
         }
 
-    private void InitializeComponents()
-    {
-        if (_evolution != null && _evolutionStages != null)
+private void InitializeComponents()
         {
-            _evolution.Initialize(_evolutionStages);
-        }
+            // TouchFunctionListManager 초기화 보장
+            var listManager = ClickerGame.UI.TouchFunctionListManager.Instance;
+            if (listManager == null)
+            {
+                var go = new GameObject("TouchFunctionListManager");
+                listManager = go.AddComponent<ClickerGame.UI.TouchFunctionListManager>();
+                Debug.Log("[GameplayManager] Created TouchFunctionListManager");
+            }
+            
+            if (_evolution != null && _evolutionStages != null)
+            {
+                _evolution.Initialize(_evolutionStages);
+            }
 
-        if (_touchFunctionManager != null && _touchFunctionData != null)
-        {
-            _touchFunctionManager.LoadFromData(_touchFunctionData);
+            if (_touchFunctionManager != null && _touchFunctionData != null)
+            {
+                _touchFunctionManager.LoadFromData(_touchFunctionData);
+            }
         }
-    }
 
         private void OnCharacterClicked()
         {

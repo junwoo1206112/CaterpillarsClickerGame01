@@ -1,12 +1,16 @@
 using UnityEngine;
 using System.Collections.Generic;
 using ClickerGame.Data.Models;
+using ClickerGame.Gameplay;
 
 namespace ClickerGame.UI
 {
     public class TouchFunctionListManager : MonoBehaviour
     {
         public static TouchFunctionListManager Instance { get; private set; }
+        
+        [Header("References")]
+        [SerializeField] private TouchFunctionManager _touchFunctionManager;
         
         [Header("Data")]
         public List<TouchFunctionData> allFunctions = new();
@@ -20,6 +24,34 @@ namespace ClickerGame.UI
         
         public int TouchPoints => _touchPoints;
         
+        public int PointsPerClick => CalculatePointsPerClick();
+        
+        private int CalculatePointsPerClick()
+        {
+            int basePoints = 1;
+            float multiplier = 1f;
+            
+            foreach (var function in activeFunctions)
+            {
+                switch (function.Effect)
+                {
+                    case "DoubleClick":
+                        multiplier *= 2f;
+                        break;
+                    case "Critical":
+                        break;
+                    case "SuperCritical":
+                        break;
+                    case "Bonus":
+                        break;
+                    default:
+                        break;
+                }
+            }
+            
+            return Mathf.RoundToInt(basePoints * multiplier);
+        }
+        
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -28,6 +60,11 @@ namespace ClickerGame.UI
                 return;
             }
             Instance = this;
+            
+            if (_touchFunctionManager == null)
+            {
+                _touchFunctionManager = FindFirstObjectByType<TouchFunctionManager>();
+            }
             
             LoadFromExcel();
         }
@@ -77,6 +114,8 @@ namespace ClickerGame.UI
             newFunction.IsActive = true;
             activeFunctions.Add(newFunction);
             
+            ApplyFunctionEffect(newFunction);
+            
             Debug.Log($"[TouchFunctionList] Added {function.Name} for {function.Cost} points");
             OnFunctionAdded?.Invoke(functionId);
             
@@ -92,11 +131,56 @@ namespace ClickerGame.UI
                 return;
             }
             
+            RemoveFunctionEffect(function);
+            
             activeFunctions.Remove(function);
             Debug.Log($"[TouchFunctionList] Removed {function.Name}");
             OnFunctionRemoved?.Invoke(functionId);
             
             SaveToExcel();
+        }
+        
+        private void ApplyFunctionEffect(TouchFunctionData function)
+        {
+            if (_touchFunctionManager == null)
+            {
+                Debug.LogWarning("[TouchFunctionList] TouchFunctionManager not found!");
+                return;
+            }
+            
+            switch (function.Effect)
+            {
+                case "Critical":
+                    _touchFunctionManager.ActivateCriticalMode(0.1f, 0f);
+                    break;
+                case "SpeedBoost":
+                    _touchFunctionManager.ActivateSpeedBoost();
+                    break;
+                case "SuperCritical":
+                    _touchFunctionManager.ActivateCriticalMode(0.2f, 0f);
+                    break;
+                default:
+                    Debug.Log($"[TouchFunctionList] Effect {function.Effect} applied");
+                    break;
+            }
+        }
+        
+        private void RemoveFunctionEffect(TouchFunctionData function)
+        {
+            if (_touchFunctionManager == null) return;
+            
+            switch (function.Effect)
+            {
+                case "Critical":
+                case "SuperCritical":
+                    break;
+                case "SpeedBoost":
+                    break;
+                default:
+                    break;
+            }
+            
+            Debug.Log($"[TouchFunctionList] Effect {function.Effect} removed");
         }
         
         public bool IsFunctionActive(string functionId)

@@ -37,6 +37,11 @@ namespace ClickerGame.Gameplay
             OnTouchCountChanged?.Invoke(_totalTouchCount);
 
             CheckBonus();
+
+            if (ClickerGame.UI.TouchFunctionListManager.Instance != null)
+            {
+                ClickerGame.UI.TouchFunctionListManager.Instance.AddTouchPoint(1);
+            }
         }
 
         private void CheckBonus()

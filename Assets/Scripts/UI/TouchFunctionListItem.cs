@@ -7,28 +7,75 @@ namespace ClickerGame.UI
     public class TouchFunctionListItem : MonoBehaviour
     {
         [Header("UI References")]
-        public Text nameText;
-        public Text descriptionText;
-        public Text costText;
-        public Text levelText;
-        public Text pointsText;
-        public Button addButton;
-        public Button removeButton;
+        [SerializeField] private Text nameText;
+        [SerializeField] private Text descriptionText;
+        [SerializeField] private Text costText;
+        [SerializeField] private Text levelText;
+        [SerializeField] private Text pointsText;
+        [SerializeField] private Button addButton;
+        [SerializeField] private Button removeButton;
         
         private TouchFunctionData _data;
         private bool _isActive = false;
+        
+        private void Awake()
+        {
+            SetupButtons();
+        }
+        
+        private void Update()
+        {
+            UpdatePointsDisplay();
+        }
+        
+        private void UpdatePointsDisplay()
+        {
+            if (pointsText != null && TouchFunctionListManager.Instance != null)
+            {
+                int perClick = TouchFunctionListManager.Instance.PointsPerClick;
+                pointsText.text = $"+{perClick}/클릭";
+            }
+        }
         
         public void Initialize(TouchFunctionData data)
         {
             _data = data;
             UpdateUI();
-            SetupButtons();
         }
         
         public void SetActiveState(bool isActive)
         {
             _isActive = isActive;
             UpdateUI();
+        }
+        
+        private void SetupButtons()
+        {
+            if (addButton != null)
+            {
+                addButton.onClick.AddListener(OnAddClicked);
+            }
+            
+            if (removeButton != null)
+            {
+                removeButton.onClick.AddListener(OnRemoveClicked);
+            }
+        }
+        
+        private void OnAddClicked()
+        {
+            if (TouchFunctionListManager.Instance != null && _data != null)
+            {
+                TouchFunctionListManager.Instance.AddFunction(_data.ID);
+            }
+        }
+        
+        private void OnRemoveClicked()
+        {
+            if (TouchFunctionListManager.Instance != null && _data != null)
+            {
+                TouchFunctionListManager.Instance.RemoveFunction(_data.ID);
+            }
         }
         
         private void UpdateUI()
@@ -47,13 +94,6 @@ namespace ClickerGame.UI
             if (levelText != null)
                 levelText.text = $"Lv. {_data.Level}";
             
-            if (pointsText != null)
-            {
-                var listManager = TouchFunctionListManager.Instance;
-                if (listManager != null)
-                    pointsText.text = $"Points: {listManager.TouchPoints}";
-            }
-            
             if (addButton != null)
                 addButton.gameObject.SetActive(!_isActive);
             
@@ -61,36 +101,18 @@ namespace ClickerGame.UI
                 removeButton.gameObject.SetActive(_isActive);
         }
         
-        private void SetupButtons()
-        {
-            if (addButton != null)
-            {
-                addButton.onClick.RemoveAllListeners();
-                addButton.onClick.AddListener(() =>
-                {
-                    if (TouchFunctionListManager.Instance != null)
-                    {
-                        TouchFunctionListManager.Instance.AddFunction(_data.ID);
-                    }
-                });
-            }
-            
-            if (removeButton != null)
-            {
-                removeButton.onClick.RemoveAllListeners();
-                removeButton.onClick.AddListener(() =>
-                {
-                    if (TouchFunctionListManager.Instance != null)
-                    {
-                        TouchFunctionListManager.Instance.RemoveFunction(_data.ID);
-                    }
-                });
-            }
-        }
-        
         public void Refresh()
         {
             UpdateUI();
+        }
+        
+        private void OnDestroy()
+        {
+            if (addButton != null)
+                addButton.onClick.RemoveListener(OnAddClicked);
+            
+            if (removeButton != null)
+                removeButton.onClick.RemoveListener(OnRemoveClicked);
         }
     }
 }

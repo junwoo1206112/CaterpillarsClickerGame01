@@ -10,8 +10,10 @@ namespace ClickerGame.Gameplay.TouchFunction
         {
             ITouchFunction function = data.FunctionType switch
             {
+                "Bonus" => new BonusTouchFunction(),
                 "BonusClick" => new BonusTouchFunction(),
                 "SpeedBoost" => new SpeedBoostFunction(),
+                "Critical" => new CriticalTouchFunction(),
                 "CriticalClick" => new CriticalTouchFunction(),
                 _ => new BonusTouchFunction()
             };
