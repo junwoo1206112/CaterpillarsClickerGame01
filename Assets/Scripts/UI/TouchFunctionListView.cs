@@ -11,14 +11,12 @@ namespace ClickerGame.UI
         [SerializeField] private Transform contentParent;
         [SerializeField] private TouchFunctionListItem itemPrefab;
         [SerializeField] private ScrollRect scrollRect;
-        [SerializeField] private Button closeButton;
         [SerializeField] private Text pointsText;
         
         private List<TouchFunctionListItem> _items = new();
         
         private void Awake()
         {
-            SetupButtons();
             RefreshList();
         }
         
@@ -36,15 +34,12 @@ namespace ClickerGame.UI
             }
         }
         
-        private void SetupButtons()
+        private void OnDestroy()
         {
-            if (closeButton != null)
-                closeButton.onClick.AddListener(CloseWindow);
-            
             if (TouchFunctionListManager.Instance != null)
             {
-                TouchFunctionListManager.Instance.OnFunctionAdded += (id) => RefreshList();
-                TouchFunctionListManager.Instance.OnFunctionRemoved += (id) => RefreshList();
+                TouchFunctionListManager.Instance.OnFunctionAdded -= (id) => RefreshList();
+                TouchFunctionListManager.Instance.OnFunctionRemoved -= (id) => RefreshList();
             }
         }
         
@@ -88,23 +83,6 @@ namespace ClickerGame.UI
             newItem.SetActiveState(isActive);
             
             _items.Add(newItem);
-        }
-        
-        private void CloseWindow()
-        {
-            gameObject.SetActive(false);
-        }
-        
-        private void OnDestroy()
-        {
-            if (closeButton != null)
-                closeButton.onClick.RemoveListener(CloseWindow);
-            
-            if (TouchFunctionListManager.Instance != null)
-            {
-                TouchFunctionListManager.Instance.OnFunctionAdded -= (id) => RefreshList();
-                TouchFunctionListManager.Instance.OnFunctionRemoved -= (id) => RefreshList();
-            }
         }
     }
 }
