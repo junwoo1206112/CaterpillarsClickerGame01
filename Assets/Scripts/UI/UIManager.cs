@@ -11,7 +11,6 @@ namespace ClickerGame.UI
         [SerializeField] private GameObject settingWindow;
         [SerializeField] private GameObject characterCustomizeWindow;
         [SerializeField] private GameObject backgroundWindow;
-        [SerializeField] private GameObject touchFunctionWindow;
 
         [Header("TopBar Buttons")]
         [SerializeField] private Button settingButton;
@@ -20,7 +19,6 @@ namespace ClickerGame.UI
         [SerializeField] private Button backgroundButton;
         [SerializeField] private Button speedBoostButton;
         [SerializeField] private Button itemButton;
-        [SerializeField] private Button touchFunctionButton;
 
         private void Awake()
         {
@@ -61,9 +59,6 @@ namespace ClickerGame.UI
 
             if (itemButton != null)
                 itemButton.onClick.AddListener(OnItemButtonClicked);
-
-            if (touchFunctionButton != null)
-                touchFunctionButton.onClick.AddListener(OpenTouchFunctionWindow);
         }
 
         #region Window Management
@@ -102,15 +97,6 @@ namespace ClickerGame.UI
             }
         }
 
-        public void OpenTouchFunctionWindow()
-        {
-            CloseAllWindows();
-            if (touchFunctionWindow != null)
-            {
-                touchFunctionWindow.SetActive(true);
-            }
-        }
-
         #endregion
 
         #region Button Events
@@ -138,8 +124,8 @@ namespace ClickerGame.UI
         {
             Debug.Log("[UIManager] Item button clicked!");
             
-            // 터치 횟수 50~100 랜덤 증가
-            int randomCount = Random.Range(50, 101);
+            // 터치 횟수 100~500 랜덤 증가
+            int randomCount = Random.Range(100, 501);
             Debug.Log($"[UIManager] Random count generated: {randomCount}");
             
             var touchCounter = FindFirstObjectByType<Gameplay.TouchCounter>();
@@ -183,9 +169,6 @@ namespace ClickerGame.UI
 
             if (itemButton != null)
                 itemButton.onClick.RemoveListener(OnItemButtonClicked);
-
-            if (touchFunctionButton != null)
-                touchFunctionButton.onClick.RemoveListener(OpenTouchFunctionWindow);
         }
 
         #endregion
