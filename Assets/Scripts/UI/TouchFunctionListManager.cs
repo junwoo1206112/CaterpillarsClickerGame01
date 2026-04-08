@@ -37,19 +37,21 @@ namespace ClickerGame.UI
                 {
                     case "DoubleClick":
                         multiplier *= 2f;
+                        Debug.Log($"[PointsPerClick] DoubleClick active: x{multiplier}");
                         break;
                     case "Critical":
-                        break;
                     case "SuperCritical":
                         break;
-                    case "Bonus":
+                    case "SpeedBoost":
                         break;
                     default:
                         break;
                 }
             }
             
-            return Mathf.RoundToInt(basePoints * multiplier);
+            int result = Mathf.RoundToInt(basePoints * multiplier);
+            Debug.Log($"[PointsPerClick] Calculated: {result} (base: {basePoints}, multiplier: {multiplier}, active: {activeFunctions.Count})");
+            return result;
         }
         
         private void Awake()
@@ -199,7 +201,7 @@ namespace ClickerGame.UI
                 {
                     allFunctions.Add(new TouchFunctionData
                     {
-                        ID = func.FunctionName,
+                        ID = func.ID,  // FunctionName 이 아닌 ID 사용!
                         Name = func.FunctionName,
                         Description = GetDescription(func.FunctionType),
                         Cost = GetCost(func.FunctionType),
