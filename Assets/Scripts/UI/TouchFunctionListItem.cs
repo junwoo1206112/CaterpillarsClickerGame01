@@ -13,7 +13,6 @@ namespace ClickerGame.UI
         [SerializeField] private Text levelText;
         [SerializeField] private Text pointsText;
         [SerializeField] private Button addButton;
-        [SerializeField] private Button removeButton;
         
         private TouchFunctionData _data;
         private bool _isActive = false;
@@ -62,11 +61,6 @@ namespace ClickerGame.UI
             {
                 addButton.onClick.AddListener(OnAddClicked);
             }
-            
-            if (removeButton != null)
-            {
-                removeButton.onClick.AddListener(OnRemoveClicked);
-            }
         }
         
         private void OnAddClicked()
@@ -74,14 +68,6 @@ namespace ClickerGame.UI
             if (TouchFunctionListManager.Instance != null && _data != null)
             {
                 TouchFunctionListManager.Instance.AddFunction(_data.ID);
-            }
-        }
-        
-        private void OnRemoveClicked()
-        {
-            if (TouchFunctionListManager.Instance != null && _data != null)
-            {
-                TouchFunctionListManager.Instance.RemoveFunction(_data.ID);
             }
         }
         
@@ -101,25 +87,14 @@ namespace ClickerGame.UI
             if (levelText != null)
                 levelText.text = $"Lv. {_data.Level}";
             
+            // 활성화되면 버튼 숨기기
             if (addButton != null)
                 addButton.gameObject.SetActive(!_isActive);
-            
-            if (removeButton != null)
-                removeButton.gameObject.SetActive(_isActive);
         }
         
         public void Refresh()
         {
             UpdateUI();
-        }
-        
-        private void OnDestroy()
-        {
-            if (addButton != null)
-                addButton.onClick.RemoveListener(OnAddClicked);
-            
-            if (removeButton != null)
-                removeButton.onClick.RemoveListener(OnRemoveClicked);
         }
     }
 }
