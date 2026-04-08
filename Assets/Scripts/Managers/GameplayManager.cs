@@ -88,34 +88,24 @@ namespace ClickerGame.Core
 
 private void LoadEvolutionData()
         {
-            // DataInitializer 에서 데이터 가져오기
-            if (DataInitializer.Instance != null)
-            {
-                var container = DataInitializer.Instance.Container;
-                if (container.TryResolve<DataManager>(out var dataManager))
-                {
-                    if (dataManager.Characters != null && dataManager.Characters.Count > 0)
-                    {
-                        _evolutionStages = dataManager.Characters;
-                        Debug.Log($"[GameplayManager] Loaded {_evolutionStages.Count} evolution stages from DataManager");
-                        return;
-                    }
-                }
-            }
-
-            // Resources 폴더에서 로드 (백업)
+            // Resources 폴더에서 직접 로드
             var evolutionList = Resources.Load<EvolutionStageListSO>("EvolutionStageList");
             
-            if (evolutionList != null && evolutionList.Stages != null)
+            if (evolutionList != null && evolutionList.Stages != null && evolutionList.Stages.Count > 0)
             {
                 _evolutionStages = evolutionList.Stages;
                 Debug.Log($"[GameplayManager] Loaded {_evolutionStages.Count} evolution stages from Resources");
+                return;
             }
-            else
+            
+            // 데이터가 없으면 빈 리스트로 시작 (에러 방지)
+            Debug.LogWarning("[GameplayManager] EvolutionStageList is empty or null! Creating default data...");
+            _evolutionStages = new List<EvolutionStageDataModel>
             {
-                Debug.LogError("[GameplayManager] EvolutionStageList not found in Resources!");
-                _evolutionStages = new List<EvolutionStageDataModel>();
-            }
+                new EvolutionStageDataModel { ID = "1", Name = "애벌레", TouchRequired = 0 },
+                new EvolutionStageDataModel { ID = "2", Name = "번데기", TouchRequired = 1000 },
+                new EvolutionStageDataModel { ID = "3", Name = "나비", TouchRequired = 3000 }
+            };
         }
 
         private void SetupEvents()
