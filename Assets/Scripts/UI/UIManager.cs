@@ -11,6 +11,7 @@ namespace ClickerGame.UI
         [SerializeField] private GameObject settingWindow;
         [SerializeField] private GameObject characterCustomizeWindow;
         [SerializeField] private GameObject backgroundWindow;
+        [SerializeField] private GameObject touchFunctionWindow;
 
         [Header("TopBar Buttons")]
         [SerializeField] private Button settingButton;
@@ -19,6 +20,7 @@ namespace ClickerGame.UI
         [SerializeField] private Button backgroundButton;
         [SerializeField] private Button speedBoostButton;
         [SerializeField] private Button itemButton;
+        [SerializeField] private Button touchFunctionButton;
 
         private void Awake()
         {
@@ -59,6 +61,9 @@ namespace ClickerGame.UI
 
             if (itemButton != null)
                 itemButton.onClick.AddListener(OnItemButtonClicked);
+
+            if (touchFunctionButton != null)
+                touchFunctionButton.onClick.AddListener(OpenTouchFunctionWindow);
         }
 
         #region Window Management
@@ -94,6 +99,15 @@ namespace ClickerGame.UI
             if (backgroundWindow != null)
             {
                 backgroundWindow.SetActive(true);
+            }
+        }
+
+        public void OpenTouchFunctionWindow()
+        {
+            CloseAllWindows();
+            if (touchFunctionWindow != null)
+            {
+                touchFunctionWindow.SetActive(true);
             }
         }
 
@@ -169,6 +183,9 @@ namespace ClickerGame.UI
 
             if (itemButton != null)
                 itemButton.onClick.RemoveListener(OnItemButtonClicked);
+
+            if (touchFunctionButton != null)
+                touchFunctionButton.onClick.RemoveListener(OpenTouchFunctionWindow);
         }
 
         #endregion
