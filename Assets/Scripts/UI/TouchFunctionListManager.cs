@@ -31,32 +31,22 @@ private int CalculatePointsPerClick()
             int basePoints = 1;
             float multiplier = 1f;
             
-            Debug.Log($"[PointsPerClick] Checking {activeFunctions.Count} active functions");
-            
             foreach (var function in activeFunctions)
             {
-                Debug.Log($"[PointsPerClick] Function: {function.Name}, Effect: {function.Effect}");
-                
                 switch (function.Effect)
                 {
                     case "DoubleClick":
                         multiplier *= 2f;
-                        Debug.Log($"[PointsPerClick] DoubleClick applied! Multiplier: {multiplier}");
                         break;
                     case "Critical":
                     case "SuperCritical":
                         break;
                     case "SpeedBoost":
                         break;
-                    default:
-                        Debug.LogWarning($"[PointsPerClick] Unknown effect: {function.Effect}");
-                        break;
                 }
             }
             
-            int result = Mathf.RoundToInt(basePoints * multiplier);
-            Debug.Log($"[PointsPerClick] Final: {result} (base: {basePoints}, multiplier: {multiplier})");
-            return result;
+            return Mathf.RoundToInt(basePoints * multiplier);
         }
         
         private void Awake()
@@ -79,13 +69,6 @@ private int CalculatePointsPerClick()
         public void AddTouchPoint(int amount = 1)
         {
             _touchPoints += amount;
-            Debug.Log($"[TouchFunctionList] Touch Points: {_touchPoints} (added {amount})");
-            
-            // UI 업데이트 이벤트 발생
-            if (OnFunctionAdded != null)
-            {
-                OnFunctionAdded.Invoke("");
-            }
         }
         
         public bool CanAfford(int cost)

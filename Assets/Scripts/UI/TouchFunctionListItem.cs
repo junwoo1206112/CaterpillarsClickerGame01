@@ -11,7 +11,6 @@ namespace ClickerGame.UI
         [SerializeField] private Text descriptionText;
         [SerializeField] private Text costText;
         [SerializeField] private Text levelText;
-        [SerializeField] private Text pointsText;
         [SerializeField] private Button addButton;
         
         private TouchFunctionData _data;
@@ -26,20 +25,6 @@ namespace ClickerGame.UI
             if (image != null)
             {
                 image.raycastTarget = false;
-            }
-        }
-        
-        private void Update()
-        {
-            UpdatePointsDisplay();
-        }
-        
-        private void UpdatePointsDisplay()
-        {
-            if (pointsText != null && TouchFunctionListManager.Instance != null)
-            {
-                int perClick = TouchFunctionListManager.Instance.PointsPerClick;
-                pointsText.text = $"+{perClick}/클릭";
             }
         }
         
