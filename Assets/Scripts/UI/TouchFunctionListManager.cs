@@ -31,34 +31,22 @@ private int CalculatePointsPerClick()
             int basePoints = 1;
             float multiplier = 1f;
             
-            Debug.Log($"[PointsPerClick] Calculating... Active functions: {activeFunctions.Count}");
-            
             foreach (var function in activeFunctions)
             {
-                Debug.Log($"[PointsPerClick] Checking: {function.Name}, Effect: {function.Effect}, Level: {function.Level}");
-                
                 switch (function.Effect)
                 {
                     case "DoubleClick":
                         multiplier *= 2f;
-                        Debug.Log($"[PointsPerClick] DoubleClick found! Multiplier: {multiplier}");
                         break;
                     case "Critical":
                     case "SuperCritical":
-                        Debug.Log($"[PointsPerClick] {function.Effect} - no multiplier");
                         break;
                     case "SpeedBoost":
-                        Debug.Log($"[PointsPerClick] SpeedBoost - no multiplier");
-                        break;
-                    default:
-                        Debug.Log($"[PointsPerClick] Unknown effect: {function.Effect}");
                         break;
                 }
             }
             
-            int result = Mathf.RoundToInt(basePoints * multiplier);
-            Debug.Log($"[PointsPerClick] Final: {result} (base: {basePoints}, multiplier: {multiplier})");
-            return result;
+            return Mathf.RoundToInt(basePoints * multiplier);
         }
         
         private void Awake()
@@ -103,19 +91,12 @@ private int CalculatePointsPerClick()
         
         public void AddFunction(string functionId)
         {
-            Debug.Log($"[TouchFunctionList] === AddFunction START: {functionId} ===");
-            Debug.Log($"[TouchFunctionList] Current Points: {_touchPoints}");
-            Debug.Log($"[TouchFunctionList] Active Functions before: {activeFunctions.Count}");
-            
             var function = allFunctions.Find(f => f.ID == functionId);
             if (function == null)
             {
                 Debug.LogError($"[TouchFunctionList] Function {functionId} not found!");
-                Debug.LogError($"[TouchFunctionList] Available IDs: {string.Join(", ", allFunctions.ConvertAll(f => f.ID))}");
                 return;
             }
-            
-            Debug.Log($"[TouchFunctionList] Function found: {function.Name}, Cost: {function.Cost}, Effect: {function.Effect}");
             
             if (!CanAfford(function.Cost))
             {
@@ -131,16 +112,13 @@ private int CalculatePointsPerClick()
                 // 이미 활성화됨 → 레벨업
                 existingFunction.Level++;
                 Debug.Log($"[TouchFunctionList] Level up! {function.Name} → Lv.{existingFunction.Level}");
-                Debug.Log($"[TouchFunctionList] Points after: {_touchPoints} (no cost for levelup)");
                 OnFunctionAdded?.Invoke(functionId);
                 SaveToExcel();
                 return;
             }
             
             // 포인트 차감
-            Debug.Log($"[TouchFunctionList] Spending {function.Cost} points...");
             SpendPoints(function.Cost);
-            Debug.Log($"[TouchFunctionList] Points after spend: {_touchPoints}");
             
             // 새 함수 추가
             var newFunction = function.Clone();
@@ -148,18 +126,12 @@ private int CalculatePointsPerClick()
             newFunction.Level = 1;
             activeFunctions.Add(newFunction);
             
-            Debug.Log($"[TouchFunctionList] Added {function.Name} (ID: {function.ID}, Effect: {function.Effect}, Level: {newFunction.Level})");
-            Debug.Log($"[TouchFunctionList] Active functions after: {activeFunctions.Count}");
-            foreach (var af in activeFunctions)
-            {
-                Debug.Log($"  - {af.Name} (Effect: {af.Effect}, Level: {af.Level})");
-            }
+            Debug.Log($"[TouchFunctionList] Added {function.Name} (ID: {function.ID}, Effect: {function.Effect})");
+            Debug.Log($"[TouchFunctionList] Points remaining: {_touchPoints}");
             
             ApplyFunctionEffect(newFunction);
             OnFunctionAdded?.Invoke(functionId);
             SaveToExcel();
-            
-            Debug.Log($"[TouchFunctionList] === AddFunction END ===");
         }
         
         public void RemoveFunction(string functionId)
