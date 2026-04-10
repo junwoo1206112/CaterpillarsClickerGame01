@@ -11,6 +11,7 @@ namespace ClickerGame.Gameplay
         [Header("Settings")]
         [SerializeField] private List<EvolutionStageDataModel> _evolutionStages;
         [SerializeField] private Transform _spriteParent;
+        [SerializeField] private SpriteRenderer _targetSpriteRenderer;
 
         [Header("Events")]
         public UnityEvent<int> OnEvolution;
@@ -31,28 +32,63 @@ namespace ClickerGame.Gameplay
             if (OnEvolutionNameChanged == null)
                 OnEvolutionNameChanged = new UnityEvent<string>();
 
-            if (_spriteParent == null)
-                _spriteParent = transform;
-
-            // 3D 오브젝트 (MeshRenderer) 또는 2D 스프라이트 (SpriteRenderer) 지원
-            _spriteRenderer = GetComponent<SpriteRenderer>();
-            if (_spriteRenderer == null)
+            _spriteParent = transform;
+        }
+        
+        private void Start()
+        {
+            if (_evolutionStages == null || _evolutionStages.Count == 0)
             {
-                // 3D 오브젝트는 MeshRenderer 가 있으므로 SpriteRenderer 추가 안함
-                var meshRenderer = GetComponent<MeshRenderer>();
-                if (meshRenderer == null)
-                {
-                    // 2D 용도라면 SpriteRenderer 추가
-                    _spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
-                }
+                LoadEvolutionData();
             }
+        }
+        
+        private void LoadEvolutionData()
+        {
+            _evolutionStages = new List<EvolutionStageDataModel>
+            {
+                new EvolutionStageDataModel { ID = "1", Name = "애벌레", TouchRequired = 0, SpritePath = "Sprites/Characters/caterpillar", Scale = new Vector3(1, 1, 1) },
+                new EvolutionStageDataModel { ID = "2", Name = "번데기", TouchRequired = 1000, SpritePath = "Sprites/Characters/cocoon", Scale = new Vector3(1, 1, 1) },
+                new EvolutionStageDataModel { ID = "3", Name = "나비", TouchRequired = 3000, SpritePath = "Sprites/Characters/butterfly", Scale = new Vector3(1, 1, 1) }
+            };
+            Debug.Log($"[CharacterEvolution] Using default evolution stages with sprite paths");
+            UpdateStage(1);
         }
 
         public void Initialize(List<EvolutionStageDataModel> evolutionStages)
         {
             _evolutionStages = evolutionStages;
             
-            // 초기 단계 설정 (애벌레)
+            // 3D Mesh 비활성화
+            var meshRenderer = GetComponent<MeshRenderer>();
+            if (meshRenderer != null)
+                meshRenderer.enabled = false;
+            
+            // Inspector에서 지정한 SpriteRenderer 사용
+            if (_targetSpriteRenderer != null)
+            {
+                _spriteRenderer = _targetSpriteRenderer;
+                Debug.Log($"[CharacterEvolution] Using target SpriteRenderer: {_spriteRenderer.gameObject.name}");
+            }
+            else
+            {
+                // 기존 SpriteRenderer 찾기
+                _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+                
+                if (_spriteRenderer == null)
+                {
+                    // 없으면 새로 생성
+                    GameObject spriteObj = new GameObject("Sprite");
+                    spriteObj.transform.SetParent(transform);
+                    spriteObj.transform.localPosition = Vector3.zero;
+                    spriteObj.transform.localRotation = Quaternion.identity;
+                    spriteObj.transform.localScale = Vector3.one;
+                    _spriteRenderer = spriteObj.AddComponent<SpriteRenderer>();
+                    Debug.Log("[CharacterEvolution] Created new SpriteRenderer");
+                }
+            }
+            
+            _spriteRenderer.sortingOrder = 10;
             UpdateStage(1);
         }
 
@@ -97,9 +133,14 @@ namespace ClickerGame.Gameplay
             var data = FindDataForStage(stage);
             if (data != null)
             {
-                Debug.Log($"[CharacterEvolution] Evolved to Stage {stage}: {data.Name}");
+                Debug.Log($"[CharacterEvolution] Evolved to Stage {stage}: {data.Name}, SpritePath: {data.SpritePath}");
                 
                 SetSpriteByPath(data.SpritePath);
+                
+                if (_spriteRenderer != null && data.Scale != Vector3.zero)
+                {
+                    _spriteRenderer.transform.localScale = data.Scale;
+                }
 
                 // 이벤트로 이름 알림 (GameUI 가 받아서 표시)
                 Debug.Log($"[CharacterEvolution] Invoking OnEvolutionNameChanged: {data.Name}");
@@ -128,12 +169,30 @@ namespace ClickerGame.Gameplay
         private void SetSpriteByPath(string spritePath)
         {
             if (string.IsNullOrEmpty(spritePath))
+            {
+                Debug.LogWarning("[CharacterEvolution] Sprite path is null or empty");
                 return;
+            }
 
-            // 나중에 스프라이트 로드 구현
-            // Sprite sprite = Resources.Load<Sprite>(spritePath);
-            // if (sprite != null && _spriteRenderer != null)
-            //     _spriteRenderer.sprite = sprite;
+            Sprite sprite = Resources.Load<Sprite>(spritePath);
+            if (sprite != null && _spriteRenderer != null)
+            {
+                _spriteRenderer.sprite = sprite;
+                _spriteRenderer.sortingOrder = 10;
+                
+                var meshRenderer = GetComponent<MeshRenderer>();
+                if (meshRenderer != null)
+                    meshRenderer.enabled = false;
+                
+                Debug.Log($"[CharacterEvolution] Sprite loaded: {spritePath}, size: {sprite.rect.size}");
+            }
+            else
+            {
+                if (sprite == null)
+                    Debug.LogError($"[CharacterEvolution] Failed to load sprite at path: {spritePath}");
+                if (_spriteRenderer == null)
+                    Debug.LogError("[CharacterEvolution] SpriteRenderer is null");
+            }
         }
 
         public void SetSprite(Sprite sprite)

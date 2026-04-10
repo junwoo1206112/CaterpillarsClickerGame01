@@ -15,6 +15,9 @@ namespace ClickerGame.Gameplay.TouchFunction
                 "SpeedBoost" => new SpeedBoostFunction(),
                 "Critical" => new CriticalTouchFunction(),
                 "CriticalClick" => new CriticalTouchFunction(),
+                "PowerBoost" => new PowerBoostFunction(data.FunctionName, Mathf.RoundToInt(data.Multiplier)),
+                "BonusPoints" => new BonusPointsFunction(data.FunctionName, Mathf.RoundToInt(data.Multiplier)),
+                "TripleClick" => new TripleClickFunction(),
                 _ => new BonusTouchFunction()
             };
 
@@ -36,6 +39,14 @@ namespace ClickerGame.Gameplay.TouchFunction
             else if (function is CriticalTouchFunction critical)
             {
                 critical.SetCriticalChance(data.CriticalChance);
+            }
+            else if (function is PowerBoostFunction powerBoost)
+            {
+                // PowerBoostFunction initialized with data
+            }
+            else if (function is BonusPointsFunction bonusPoints)
+            {
+                // BonusPointsFunction initialized with data
             }
         }
 

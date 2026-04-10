@@ -11,6 +11,7 @@ namespace ClickerGame.Data.Models
         public string Name;
         public int TouchRequired;
         public string SpritePath;
+        public Vector3 Scale = Vector3.one;
     }
 
     [Serializable]

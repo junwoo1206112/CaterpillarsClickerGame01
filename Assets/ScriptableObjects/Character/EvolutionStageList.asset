@@ -17,3 +17,4 @@ MonoBehaviour:
     Name: Caterpillar
     TouchRequired: 0
     SpritePath: Assets/Sprites/character_caterpillar
+    Scale: {x: 1, y: 1, z: 1}

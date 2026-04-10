@@ -295,18 +295,20 @@ namespace ClickerGame.Gameplay
 
             var speedBoost = _functions.Find(f => f is TouchFunction.SpeedBoostFunction) as TouchFunction.SpeedBoostFunction;
 
-            if (speedBoost != null)
+            if (speedBoost != null && speedBoost.CanActivate(0, currentTime))
             {
-                if (speedBoost.CanActivate(0, currentTime))
-                {
-                    speedBoost.Activate();
-                    OnFunctionActivated?.Invoke("Speed Boost");
-                }
-                else
-                {
-                    float cooldownRemaining = speedBoost.GetCooldownRemaining(currentTime);
-                    Debug.Log($"[SpeedBoost] On cooldown. {cooldownRemaining:F0}s remaining");
-                }
+                speedBoost.Activate();
+                OnFunctionActivated?.Invoke("Speed Boost");
+                Debug.Log($"[SpeedBoost] Activated! 2x points for 20 seconds!");
+            }
+            else if (speedBoost != null)
+            {
+                float cooldownRemaining = speedBoost.GetCooldownRemaining(currentTime);
+                Debug.Log($"[SpeedBoost] On cooldown. {cooldownRemaining:F0}s remaining");
+            }
+            else
+            {
+                Debug.LogWarning("[SpeedBoost] SpeedBoost function not found!");
             }
         }
 

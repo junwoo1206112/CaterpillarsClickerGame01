@@ -9,12 +9,15 @@ namespace ClickerGame.UI
         [Header("UI References")]
         [SerializeField] private Text nameText;
         [SerializeField] private Text descriptionText;
+        [SerializeField] private Text pointsText;
         [SerializeField] private Text costText;
         [SerializeField] private Text levelText;
         [SerializeField] private Button addButton;
         
         private TouchFunctionData _data;
         private bool _isActive = false;
+        
+        public string DataID => _data != null ? _data.ID : "";
         
         private void Awake()
         {
@@ -25,6 +28,30 @@ namespace ClickerGame.UI
             if (image != null)
             {
                 image.raycastTarget = false;
+            }
+        }
+        
+        private void OnEnable()
+        {
+            if (TouchFunctionListManager.Instance != null)
+            {
+                TouchFunctionListManager.Instance.OnPointsChanged += UpdatePointsText;
+            }
+        }
+        
+        private void OnDisable()
+        {
+            if (TouchFunctionListManager.Instance != null)
+            {
+                TouchFunctionListManager.Instance.OnPointsChanged -= UpdatePointsText;
+            }
+        }
+        
+        private void UpdatePointsText(int points)
+        {
+            if (pointsText != null)
+            {
+                pointsText.text = $"현재 포인트: {points} pts";
             }
         }
         
@@ -58,7 +85,11 @@ namespace ClickerGame.UI
         
         private void UpdateUI()
         {
-            if (_data == null) return;
+            if (_data == null)
+            {
+                Debug.LogWarning("[TouchFunctionListItem] _data is null!");
+                return;
+            }
             
             if (nameText != null)
                 nameText.text = _data.Name;
@@ -66,22 +97,64 @@ namespace ClickerGame.UI
             if (descriptionText != null)
                 descriptionText.text = _data.Description;
             
-            if (costText != null)
+            if (pointsText != null)
             {
-                // 활성화된 함수는 레벨 표시, 아니면 비용 표시
+                int currentPoints = 0;
+                if (TouchFunctionListManager.Instance != null)
+                {
+                    currentPoints = TouchFunctionListManager.Instance.TouchPoints;
+                }
+                pointsText.text = $"현재 포인트: {currentPoints} pts";
+            }
+            
+            if (levelText != null)
+            {
                 if (_isActive)
                 {
-                    costText.text = $"Lv. {_data.Level}";
+                    levelText.text = $"Lv.{_data.Level}/{_data.MaxLevel}";
                 }
                 else
                 {
-                    costText.text = $"{_data.Cost} pts";
+                    levelText.text = "Lv.1";
                 }
             }
             
-            // 활성화되면 버튼 숨기기
+            if (costText != null)
+            {
+                if (_isActive)
+                {
+                    if (_data.CanLevelUp())
+                    {
+                        int nextCost = _data.GetCurrentCost();
+                        costText.text = $"강화: {nextCost} pts";
+                    }
+                    else
+                    {
+                        costText.text = "MAX";
+                    }
+                }
+                else
+                {
+                    costText.text = $"구매: {_data.BaseCost} pts";
+                }
+            }
+            
             if (addButton != null)
-                addButton.gameObject.SetActive(!_isActive);
+            {
+                if (_isActive && !_data.CanLevelUp())
+                {
+                    addButton.gameObject.SetActive(false);
+                }
+                else
+                {
+                    addButton.gameObject.SetActive(true);
+                    var buttonText = addButton.GetComponentInChildren<UnityEngine.UI.Text>();
+                    if (buttonText != null)
+                    {
+                        buttonText.text = _isActive ? "+" : "Buy";
+                    }
+                }
+            }
         }
         
         public void Refresh()

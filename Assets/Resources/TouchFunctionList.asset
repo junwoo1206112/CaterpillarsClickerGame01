@@ -13,33 +13,53 @@ MonoBehaviour:
   m_Name: TouchFunctionList
   m_EditorClassIdentifier: Assembly-CSharp:ClickerGame.Data.Models:TouchFunctionListSO
   Functions:
+  - ID: power_boost
+    FunctionName: "\uD130\uCE58 \uD30C\uC6CC"
+    FunctionType: PowerBoost
+    TriggerCount: 0
+    Multiplier: 1
+    Duration: 0
+    Cooldown: 0
+    CriticalChance: 0
+    IsActive: 1
+    IsReusable: 1
+  - ID: bonus_points
+    FunctionName: "\uBCF4\uB108\uC2A4 \uD3EC\uC778\uD2B8"
+    FunctionType: BonusPoints
+    TriggerCount: 0
+    Multiplier: 5
+    Duration: 0
+    Cooldown: 0
+    CriticalChance: 0
+    IsActive: 1
+    IsReusable: 1
   - ID: critical
     FunctionName: "\uD06C\uB9AC\uD2F0\uCEEC"
     FunctionType: Critical
-    TriggerCount: 50
+    TriggerCount: 0
     Multiplier: 2
     Duration: 0
     Cooldown: 0
-    CriticalChance: 0
-    IsActive: 0
-    IsReusable: 0
-  - ID: doubleclick
+    CriticalChance: 0.1
+    IsActive: 1
+    IsReusable: 1
+  - ID: double_click
     FunctionName: "\uB354\uBE14\uD074\uB9AD"
     FunctionType: DoubleClick
-    TriggerCount: 100
+    TriggerCount: 0
     Multiplier: 2
     Duration: 0
     Cooldown: 0
     CriticalChance: 0
-    IsActive: 0
-    IsReusable: 0
-  - ID: speedboost
-    FunctionName: "\uC2A4\uD53C\uB4DC\uBD80\uC2A4\uD2B8"
-    FunctionType: SpeedBoost
-    TriggerCount: 200
-    Multiplier: 0
-    Duration: 60
+    IsActive: 1
+    IsReusable: 1
+  - ID: triple_click
+    FunctionName: "\uD2B8\uB9AC\uD50C\uD074\uB9AD"
+    FunctionType: TripleClick
+    TriggerCount: 0
+    Multiplier: 3
+    Duration: 0
     Cooldown: 0
     CriticalChance: 0
-    IsActive: 0
-    IsReusable: 0
+    IsActive: 1
+    IsReusable: 1

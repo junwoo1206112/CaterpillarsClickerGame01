@@ -88,33 +88,28 @@ namespace ClickerGame.Core
 
 private void LoadEvolutionData()
         {
-            // Resources 폴더에서 직접 로드
+            // ScriptableObject에서 로드
             var evolutionList = Resources.Load<EvolutionStageListSO>("EvolutionStageList");
             
             if (evolutionList != null && evolutionList.Stages != null && evolutionList.Stages.Count > 0)
             {
                 _evolutionStages = evolutionList.Stages;
-                Debug.Log($"[GameplayManager] Loaded {_evolutionStages.Count} evolution stages from Resources");
+                Debug.Log($"[GameplayManager] Loaded {_evolutionStages.Count} evolution stages from ScriptableObject");
                 return;
             }
             
-            // 데이터가 없으면 빈 리스트로 시작 (에러 방지)
-            Debug.LogWarning("[GameplayManager] EvolutionStageList is empty or null! Creating default data...");
+            // 기본 데이터 사용
+            Debug.LogWarning("[GameplayManager] Using default evolution data...");
             _evolutionStages = new List<EvolutionStageDataModel>
             {
-                new EvolutionStageDataModel { ID = "1", Name = "애벌레", TouchRequired = 0 },
-                new EvolutionStageDataModel { ID = "2", Name = "번데기", TouchRequired = 1000 },
-                new EvolutionStageDataModel { ID = "3", Name = "나비", TouchRequired = 3000 }
+                new EvolutionStageDataModel { ID = "1", Name = "애벌레", TouchRequired = 0, SpritePath = "Sprites/Characters/caterpillar", Scale = new Vector3(1, 1, 1) },
+                new EvolutionStageDataModel { ID = "2", Name = "번데기", TouchRequired = 1000, SpritePath = "Sprites/Characters/cocoon", Scale = new Vector3(1, 1, 1) },
+                new EvolutionStageDataModel { ID = "3", Name = "나비", TouchRequired = 3000, SpritePath = "Sprites/Characters/butterfly", Scale = new Vector3(1, 1, 1) }
             };
         }
 
         private void SetupEvents()
         {
-            if (_clickHandler != null)
-            {
-                _clickHandler.OnClick.AddListener(OnCharacterClicked);
-            }
-
             if (_touchCounter != null)
             {
                 _touchCounter.OnTouchCountChanged.AddListener(OnTouchCountChanged);

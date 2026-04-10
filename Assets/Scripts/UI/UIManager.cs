@@ -71,10 +71,44 @@ namespace ClickerGame.UI
         public void OpenSettingWindow()
         {
             Debug.Log("[UIManager] Setting button clicked!");
-            var settingManager = FindFirstObjectByType<SettingManager>();
+            
+            // Try multiple ways to find SettingManager
+            SettingManager settingManager = FindFirstObjectByType<SettingManager>();
+            
+            if (settingManager == null)
+            {
+                GameObject panel = GameObject.Find("SettingPanel");
+                if (panel != null)
+                {
+                    settingManager = panel.GetComponent<SettingManager>();
+                    Debug.Log($"[UIManager] Found via GameObject.Find: {settingManager != null}");
+                }
+            }
+            
+            if (settingManager == null)
+            {
+                // Try finding in Canvas children
+                Canvas canvas = FindFirstObjectByType<Canvas>();
+                if (canvas != null)
+                {
+                    Transform panelTransform = canvas.transform.Find("SettingPanel");
+                    if (panelTransform != null)
+                    {
+                        settingManager = panelTransform.GetComponent<SettingManager>();
+                        Debug.Log($"[UIManager] Found in Canvas: {settingManager != null}");
+                    }
+                }
+            }
+            
             if (settingManager != null)
             {
                 settingManager.gameObject.SetActive(!settingManager.gameObject.activeSelf);
+                Debug.Log($"[UIManager] SettingPanel toggled: {settingManager.gameObject.activeSelf}");
+            }
+            else
+            {
+                Debug.LogError("[UIManager] SettingManager NOT FOUND! Check if SettingPanel is in scene.");
+                Debug.LogError("[UIManager] Tried: FindFirstObjectByType, GameObject.Find, Canvas.Find");
             }
         }
 

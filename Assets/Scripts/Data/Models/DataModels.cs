@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace ClickerGame.Data.Models
 {
@@ -37,15 +38,34 @@ namespace ClickerGame.Data.Models
         public string ID;
         public string Name;
         public string Description;
+        public int BaseCost;
         public int Cost;
         public int Level;
+        public int MaxLevel;
         public string Effect;
         public bool IsActive;
         public int TriggerCount;
         public string EffectType;
+        public float BaseValue;
         public float Multiplier;
         public float Duration;
         public float Cooldown;
+        public float CostMultiplier = 1.5f;
+        
+        public int GetCurrentCost()
+        {
+            return (int)(BaseCost * Mathf.Pow(CostMultiplier, Level - 1));
+        }
+        
+        public float GetCurrentValue()
+        {
+            return BaseValue * Level;
+        }
+        
+        public bool CanLevelUp()
+        {
+            return Level < MaxLevel;
+        }
         
         public TouchFunctionData Clone()
         {
@@ -54,15 +74,19 @@ namespace ClickerGame.Data.Models
                 ID = this.ID,
                 Name = this.Name,
                 Description = this.Description,
+                BaseCost = this.BaseCost,
                 Cost = this.Cost,
                 Level = this.Level,
+                MaxLevel = this.MaxLevel,
                 Effect = this.Effect,
                 IsActive = this.IsActive,
                 TriggerCount = this.TriggerCount,
                 EffectType = this.EffectType,
+                BaseValue = this.BaseValue,
                 Multiplier = this.Multiplier,
                 Duration = this.Duration,
-                Cooldown = this.Cooldown
+                Cooldown = this.Cooldown,
+                CostMultiplier = this.CostMultiplier
             };
         }
     }

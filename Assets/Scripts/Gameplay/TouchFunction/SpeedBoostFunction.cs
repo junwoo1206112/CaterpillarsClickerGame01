@@ -7,8 +7,8 @@ namespace ClickerGame.Gameplay.TouchFunction
         public string FunctionName => "Speed Boost";
         public int TriggerCount => 0;
         public float Multiplier => 2f;
-        public float Duration => 60f;
-        public float Cooldown => 300f;
+        public float Duration => 20f;
+        public float Cooldown => 30f;
         public bool IsReusable => true;
 
         private float _lastActivateTime = -999f;

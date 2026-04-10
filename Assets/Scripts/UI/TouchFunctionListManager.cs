@@ -19,17 +19,19 @@ namespace ClickerGame.UI
         [Header("Events")]
         public System.Action<string> OnFunctionAdded;
         public System.Action<string> OnFunctionRemoved;
+        public System.Action<int> OnPointsChanged;
         
-        private int _touchPoints = 0;
+        private TouchCounter _touchCounter;
         
-        public int TouchPoints => _touchPoints;
+        public int TouchPoints => _touchCounter != null ? _touchCounter.TotalTouchCount : 0;
         
         public int PointsPerClick => CalculatePointsPerClick();
         
-private int CalculatePointsPerClick()
+        private int CalculatePointsPerClick()
         {
             int basePoints = 1;
             float multiplier = 1f;
+            int bonusPoints = 0;
             
             foreach (var function in activeFunctions)
             {
@@ -37,6 +39,15 @@ private int CalculatePointsPerClick()
                 {
                     case "DoubleClick":
                         multiplier *= 2f;
+                        break;
+                    case "TripleClick":
+                        multiplier *= 3f;
+                        break;
+                    case "PowerBoost":
+                        basePoints += (int)function.GetCurrentValue();
+                        break;
+                    case "BonusPoints":
+                        bonusPoints += (int)function.GetCurrentValue();
                         break;
                     case "Critical":
                     case "SuperCritical":
@@ -46,7 +57,12 @@ private int CalculatePointsPerClick()
                 }
             }
             
-            return Mathf.RoundToInt(basePoints * multiplier);
+            if (_touchFunctionManager != null && _touchFunctionManager.IsSpeedBoostActive())
+            {
+                multiplier *= 2f;
+            }
+            
+            return Mathf.RoundToInt(basePoints * multiplier) + bonusPoints;
         }
         
         private void Awake()
@@ -63,29 +79,35 @@ private int CalculatePointsPerClick()
                 _touchFunctionManager = FindFirstObjectByType<TouchFunctionManager>();
             }
             
-            // activeFunctions 초기화 (이전 세션 데이터 제거)
+            _touchCounter = FindFirstObjectByType<TouchCounter>();
+            
             activeFunctions = new List<TouchFunctionData>();
             
             LoadFromExcel();
             
-            Debug.Log($"[TouchFunctionList] Initialized! Points: {_touchPoints}, Active Functions: {activeFunctions.Count}");
+            Debug.Log($"[TouchFunctionList] Initialized! Points: {TouchPoints}, Active Functions: {activeFunctions.Count}");
         }
         
-        public void AddTouchPoint(int amount = 1)
+        private void Start()
         {
-            _touchPoints += amount;
+            if (_touchCounter == null)
+            {
+                _touchCounter = FindFirstObjectByType<TouchCounter>();
+            }
         }
         
         public bool CanAfford(int cost)
         {
-            return _touchPoints >= cost;
+            return TouchPoints >= cost;
         }
         
         public void SpendPoints(int cost)
         {
-            if (CanAfford(cost))
+            if (_touchCounter != null && CanAfford(cost))
             {
-                _touchPoints -= cost;
+                _touchCounter.SubtractPoints(cost);
+                OnPointsChanged?.Invoke(TouchPoints);
+                Debug.Log($"[TouchFunctionList] Spent {cost} points. Remaining: {TouchPoints}");
             }
         }
         
@@ -98,36 +120,52 @@ private int CalculatePointsPerClick()
                 return;
             }
             
-            if (!CanAfford(function.Cost))
-            {
-                Debug.LogWarning($"[TouchFunctionList] Not enough points! Need {function.Cost}, have {_touchPoints}");
-                return;
-            }
-            
-            // 기존 활성화된 함수 찾기 (레벨업용)
             var existingFunction = activeFunctions.Find(f => f.ID == functionId);
             
             if (existingFunction != null)
             {
                 // 이미 활성화됨 → 레벨업
+                if (!existingFunction.CanLevelUp())
+                {
+                    Debug.LogWarning($"[TouchFunctionList] {function.Name} is already at max level ({existingFunction.MaxLevel})!");
+                    return;
+                }
+                
+                int cost = existingFunction.GetCurrentCost();
+                
+                if (!CanAfford(cost))
+                {
+                    Debug.LogWarning($"[TouchFunctionList] Not enough points! Need {cost}, have {TouchPoints}");
+                    return;
+                }
+                
+                SpendPoints(cost);
                 existingFunction.Level++;
-                Debug.Log($"[TouchFunctionList] Level up! {function.Name} → Lv.{existingFunction.Level}");
+                Debug.Log($"[TouchFunctionList] Level up! {function.Name} → Lv.{existingFunction.Level}/{existingFunction.MaxLevel}");
+                Debug.Log($"[TouchFunctionList] PointsPerClick now: {PointsPerClick}");
                 OnFunctionAdded?.Invoke(functionId);
                 SaveToExcel();
                 return;
             }
             
-            // 포인트 차감
-            SpendPoints(function.Cost);
-            
             // 새 함수 추가
+            int newCost = function.BaseCost;
+            
+            if (!CanAfford(newCost))
+            {
+                Debug.LogWarning($"[TouchFunctionList] Not enough points! Need {newCost}, have {TouchPoints}");
+                return;
+            }
+            
+            SpendPoints(newCost);
+            
             var newFunction = function.Clone();
             newFunction.IsActive = true;
             newFunction.Level = 1;
             activeFunctions.Add(newFunction);
             
-            Debug.Log($"[TouchFunctionList] Added {function.Name} (ID: {function.ID}, Effect: {function.Effect})");
-            Debug.Log($"[TouchFunctionList] Points remaining: {_touchPoints}");
+            Debug.Log($"[TouchFunctionList] Added {function.Name} Lv.1/{function.MaxLevel}");
+            Debug.Log($"[TouchFunctionList] PointsPerClick now: {PointsPerClick}");
             
             ApplyFunctionEffect(newFunction);
             OnFunctionAdded?.Invoke(functionId);
@@ -165,11 +203,17 @@ private int CalculatePointsPerClick()
                 case "Critical":
                     _touchFunctionManager.ActivateCriticalMode(0.1f, 0f);
                     break;
+                case "SuperCritical":
+                    _touchFunctionManager.ActivateCriticalMode(0.2f, 0f);
+                    break;
                 case "SpeedBoost":
                     _touchFunctionManager.ActivateSpeedBoost();
                     break;
-                case "SuperCritical":
-                    _touchFunctionManager.ActivateCriticalMode(0.2f, 0f);
+                case "PowerBoost":
+                case "BonusPoints":
+                case "DoubleClick":
+                case "TripleClick":
+                    Debug.Log($"[TouchFunctionList] Effect {function.Effect} applied - Points per click updated");
                     break;
                 default:
                     Debug.Log($"[TouchFunctionList] Effect {function.Effect} applied");
@@ -200,6 +244,11 @@ private int CalculatePointsPerClick()
             return activeFunctions.Find(f => f.ID == functionId) != null;
         }
         
+        public TouchFunctionData GetActiveFunction(string functionId)
+        {
+            return activeFunctions.Find(f => f.ID == functionId);
+        }
+        
         private void LoadFromExcel()
         {
             var dataList = Resources.Load<TouchFunctionListSO>("TouchFunctionList");
@@ -211,7 +260,7 @@ private int CalculatePointsPerClick()
                 {
                     allFunctions.Add(new TouchFunctionData
                     {
-                        ID = func.ID,  // FunctionName 이 아닌 ID 사용!
+                        ID = func.ID,
                         Name = func.FunctionName,
                         Description = GetDescription(func.FunctionType),
                         Cost = GetCost(func.FunctionType),
@@ -232,11 +281,71 @@ private int CalculatePointsPerClick()
         {
             allFunctions = new List<TouchFunctionData>
             {
-                new TouchFunctionData { ID = "critical", Name = "크리티컬", Description = "10% 확률로 2 배", Cost = 50, Level = 1, Effect = "Critical", IsActive = false },
-                new TouchFunctionData { ID = "speed", Name = "스피드부스트", Description = "연타 속도 증가", Cost = 100, Level = 1, Effect = "SpeedBoost", IsActive = false },
-                new TouchFunctionData { ID = "bonus", Name = "보너스 터치", Description = "50 회마다 +10", Cost = 150, Level = 1, Effect = "Bonus", IsActive = false },
-                new TouchFunctionData { ID = "super_critical", Name = "슈퍼크리티컬", Description = "20% 확률로 3 배", Cost = 200, Level = 1, Effect = "SuperCritical", IsActive = false },
-                new TouchFunctionData { ID = "double_click", Name = "더블클릭", Description = "항상 2 배 클릭", Cost = 300, Level = 1, Effect = "DoubleClick", IsActive = false }
+                new TouchFunctionData 
+                { 
+                    ID = "power_boost", 
+                    Name = "터치 파워", 
+                    Description = "터치당 +1 증가", 
+                    BaseCost = 50, 
+                    BaseValue = 1,
+                    MaxLevel = 10,
+                    CostMultiplier = 1.5f,
+                    Level = 1, 
+                    Effect = "PowerBoost", 
+                    IsActive = false 
+                },
+                new TouchFunctionData 
+                { 
+                    ID = "bonus_points", 
+                    Name = "보너스 포인트", 
+                    Description = "터치당 +5 추가", 
+                    BaseCost = 75, 
+                    BaseValue = 5,
+                    MaxLevel = 10,
+                    CostMultiplier = 1.5f,
+                    Level = 1, 
+                    Effect = "BonusPoints", 
+                    IsActive = false 
+                },
+                new TouchFunctionData 
+                { 
+                    ID = "critical", 
+                    Name = "크리티컬", 
+                    Description = "10% 확률로 2배", 
+                    BaseCost = 100, 
+                    BaseValue = 0.1f,
+                    MaxLevel = 5,
+                    CostMultiplier = 2f,
+                    Level = 1, 
+                    Effect = "Critical", 
+                    IsActive = false 
+                },
+                new TouchFunctionData 
+                { 
+                    ID = "double_click", 
+                    Name = "더블클릭", 
+                    Description = "항상 2배", 
+                    BaseCost = 500, 
+                    BaseValue = 2,
+                    MaxLevel = 1,
+                    CostMultiplier = 1f,
+                    Level = 1, 
+                    Effect = "DoubleClick", 
+                    IsActive = false 
+                },
+                new TouchFunctionData 
+                { 
+                    ID = "triple_click", 
+                    Name = "트리플클릭", 
+                    Description = "항상 3배", 
+                    BaseCost = 1000, 
+                    BaseValue = 3,
+                    MaxLevel = 1,
+                    CostMultiplier = 1f,
+                    Level = 1, 
+                    Effect = "TripleClick", 
+                    IsActive = false 
+                }
             };
             Debug.Log($"[TouchFunctionList] Created {allFunctions.Count} default functions");
         }
@@ -246,8 +355,13 @@ private int CalculatePointsPerClick()
             switch (functionType)
             {
                 case "Critical": return "10% 확률로 2 배";
+                case "SuperCritical": return "20% 확률로 3 배";
                 case "SpeedBoost": return "연타 속도 증가";
                 case "Bonus": return "50 회마다 +10";
+                case "DoubleClick": return "항상 2 배 클릭";
+                case "TripleClick": return "항상 3 배 클릭";
+                case "PowerBoost": return "기본 터치 증가";
+                case "BonusPoints": return "클릭 시 추가 포인트";
                 default: return "효과 없음";
             }
         }
@@ -257,8 +371,13 @@ private int CalculatePointsPerClick()
             switch (functionType)
             {
                 case "Critical": return 50;
+                case "SuperCritical": return 200;
                 case "SpeedBoost": return 100;
                 case "Bonus": return 150;
+                case "DoubleClick": return 300;
+                case "TripleClick": return 500;
+                case "PowerBoost": return 50;
+                case "BonusPoints": return 75;
                 default: return 100;
             }
         }

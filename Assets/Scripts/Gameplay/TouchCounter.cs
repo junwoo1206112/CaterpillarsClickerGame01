@@ -31,17 +31,33 @@ namespace ClickerGame.Gameplay
 
         public void AddTouch()
         {
-            _totalTouchCount++;
+            int pointsPerClick = GetPointsPerClick();
+            
+            _totalTouchCount += pointsPerClick;
             _currentIntervalCount++;
 
             OnTouchCountChanged?.Invoke(_totalTouchCount);
 
             CheckBonus();
-
+        }
+        
+        public void SubtractPoints(int amount)
+        {
+            _totalTouchCount -= amount;
+            if (_totalTouchCount < 0)
+                _totalTouchCount = 0;
+                
+            OnTouchCountChanged?.Invoke(_totalTouchCount);
+            Debug.Log($"[TouchCounter] Subtracted {amount}. Total: {_totalTouchCount}");
+        }
+        
+        private int GetPointsPerClick()
+        {
             if (ClickerGame.UI.TouchFunctionListManager.Instance != null)
             {
-                ClickerGame.UI.TouchFunctionListManager.Instance.AddTouchPoint(1);
+                return ClickerGame.UI.TouchFunctionListManager.Instance.PointsPerClick;
             }
+            return 1;
         }
 
         private void CheckBonus()

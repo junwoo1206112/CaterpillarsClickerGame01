@@ -13,33 +13,123 @@ MonoBehaviour:
   m_Name: TouchFunctionList
   m_EditorClassIdentifier: Assembly-CSharp:ClickerGame.Data.Models:TouchFunctionListSO
   Functions:
-  - ID: 1
+  - ID: power_boost_1
+    FunctionName: "\uD130\uCE58 \uD30C\uC6CC +1"
+    FunctionType: PowerBoost
+    TriggerCount: 0
+    Multiplier: 1
+    Duration: 0
+    Cooldown: 0
+    CriticalChance: 0
+    IsActive: 0
+    IsReusable: 1
+  - ID: power_boost_2
+    FunctionName: "\uD130\uCE58 \uD30C\uC6CC +2"
+    FunctionType: PowerBoost
+    TriggerCount: 0
+    Multiplier: 2
+    Duration: 0
+    Cooldown: 0
+    CriticalChance: 0
+    IsActive: 0
+    IsReusable: 1
+  - ID: power_boost_3
+    FunctionName: "\uD130\uCE58 \uD30C\uC6CC +3"
+    FunctionType: PowerBoost
+    TriggerCount: 0
+    Multiplier: 3
+    Duration: 0
+    Cooldown: 0
+    CriticalChance: 0
+    IsActive: 0
+    IsReusable: 1
+  - ID: bonus_points_5
+    FunctionName: "\uBCF4\uB108\uC2A4 \uD3EC\uC778\uD2B8 +5"
+    FunctionType: BonusPoints
+    TriggerCount: 0
+    Multiplier: 5
+    Duration: 0
+    Cooldown: 0
+    CriticalChance: 0
+    IsActive: 0
+    IsReusable: 1
+  - ID: bonus_points_10
+    FunctionName: "\uBCF4\uB108\uC2A4 \uD3EC\uC778\uD2B8 +10"
+    FunctionType: BonusPoints
+    TriggerCount: 0
+    Multiplier: 10
+    Duration: 0
+    Cooldown: 0
+    CriticalChance: 0
+    IsActive: 0
+    IsReusable: 1
+  - ID: bonus_points_20
+    FunctionName: "\uBCF4\uB108\uC2A4 \uD3EC\uC778\uD2B8 +20"
+    FunctionType: BonusPoints
+    TriggerCount: 0
+    Multiplier: 20
+    Duration: 0
+    Cooldown: 0
+    CriticalChance: 0
+    IsActive: 0
+    IsReusable: 1
+  - ID: critical
     FunctionName: "\uD06C\uB9AC\uD2F0\uCEEC"
     FunctionType: Critical
     TriggerCount: 10
     Multiplier: 2
     Duration: 0
     Cooldown: 5
-    CriticalChance: 0
-    IsActive: 1
+    CriticalChance: 0.1
+    IsActive: 0
     IsReusable: 1
-  - ID: 2
-    FunctionName: "\uC2A4\uD53C\uB4DC\uBD80\uC2A4\uD2B8"
-    FunctionType: SpeedBoost
-    TriggerCount: 50
-    Multiplier: 1
-    Duration: 10
-    Cooldown: 30
-    CriticalChance: 0
-    IsActive: 1
+  - ID: super_critical
+    FunctionName: "\uC288\uD37C\uD06C\uB9AC\uD2F0\uCEEC"
+    FunctionType: Critical
+    TriggerCount: 20
+    Multiplier: 3
+    Duration: 0
+    Cooldown: 10
+    CriticalChance: 0.2
+    IsActive: 0
     IsReusable: 1
-  - ID: 3
-    FunctionName: "\uBCF4\uB108\uC2A4"
-    FunctionType: Bonus
-    TriggerCount: 50
-    Multiplier: 1
+  - ID: double_click
+    FunctionName: "\uB354\uBE14\uD074\uB9AD"
+    FunctionType: DoubleClick
+    TriggerCount: 0
+    Multiplier: 2
     Duration: 0
     Cooldown: 0
     CriticalChance: 0
-    IsActive: 1
+    IsActive: 0
+    IsReusable: 1
+  - ID: triple_click
+    FunctionName: "\uD2B8\uB9AC\uD50C\uD074\uB9AD"
+    FunctionType: TripleClick
+    TriggerCount: 0
+    Multiplier: 3
+    Duration: 0
+    Cooldown: 0
+    CriticalChance: 0
+    IsActive: 0
+    IsReusable: 1
+  - ID: speedboost
+    FunctionName: "\uC2A4\uD53C\uB4DC\uBD80\uC2A4\uD2B8"
+    FunctionType: SpeedBoost
+    TriggerCount: 200
+    Multiplier: 2
+    Duration: 60
+    Cooldown: 300
+    CriticalChance: 0
+    IsActive: 0
+    IsReusable: 1
+  - ID: bonus
+    FunctionName: "\uBCF4\uB108\uC2A4"
+    FunctionType: Bonus
+    TriggerCount: 50
+    Multiplier: 1.33
+    Duration: 0
+    Cooldown: 0
+    CriticalChance: 0
+    IsActive: 0
     IsReusable: 1
