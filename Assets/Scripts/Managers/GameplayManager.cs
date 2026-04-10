@@ -157,10 +157,11 @@ private void LoadEvolutionData()
                 _evolution.SetTouchCount(count);
             }
 
-            if (_touchFunctionManager != null)
-            {
-                _touchFunctionManager.ProcessTouch(count);
-            }
+            // 기존 TouchFunctionManager 시스템 비활성화 (새 시스템 사용)
+            // if (_touchFunctionManager != null)
+            // {
+            //     _touchFunctionManager.ProcessTouch(count);
+            // }
         }
 
         public void ActivateSpeedBoost()
