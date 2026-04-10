@@ -79,7 +79,13 @@ private int CalculatePointsPerClick()
         public void AddTouchPoint(int amount = 1)
         {
             _touchPoints += amount;
-            Debug.Log($"[TouchFunctionList] Touch Points: {_touchPoints}");
+            Debug.Log($"[TouchFunctionList] Touch Points: {_touchPoints} (added {amount})");
+            
+            // UI 업데이트 이벤트 발생
+            if (OnFunctionAdded != null)
+            {
+                OnFunctionAdded.Invoke("");
+            }
         }
         
         public bool CanAfford(int cost)
