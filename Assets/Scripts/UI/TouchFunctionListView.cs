@@ -17,7 +17,17 @@ namespace ClickerGame.UI
         
         private void Awake()
         {
+            SetupEvents();
             RefreshList();
+        }
+        
+        private void SetupEvents()
+        {
+            if (TouchFunctionListManager.Instance != null)
+            {
+                TouchFunctionListManager.Instance.OnFunctionAdded += (id) => RefreshList();
+                TouchFunctionListManager.Instance.OnFunctionRemoved += (id) => RefreshList();
+            }
         }
         
         private void Update()

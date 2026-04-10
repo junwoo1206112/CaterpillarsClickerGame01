@@ -50,9 +50,19 @@ namespace ClickerGame.UI
         
         private void OnAddClicked()
         {
+            Debug.Log($"[TouchFunctionListItem] Add clicked: {_data?.Name} (ID: {_data?.ID}, Cost: {_data?.Cost})");
+            
             if (TouchFunctionListManager.Instance != null && _data != null)
             {
+                Debug.Log($"[TouchFunctionListItem] Points: {TouchFunctionListManager.Instance.TouchPoints}, Cost: {_data.Cost}");
                 TouchFunctionListManager.Instance.AddFunction(_data.ID);
+            }
+            else
+            {
+                if (TouchFunctionListManager.Instance == null)
+                    Debug.LogError("[TouchFunctionListItem] TouchFunctionListManager.Instance is null!");
+                if (_data == null)
+                    Debug.LogError("[TouchFunctionListItem] Data is null!");
             }
         }
         
