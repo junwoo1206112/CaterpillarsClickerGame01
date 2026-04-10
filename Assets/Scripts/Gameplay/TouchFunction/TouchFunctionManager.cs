@@ -85,7 +85,7 @@ namespace ClickerGame.Gameplay
                     Duration = 0f,
                     Cooldown = 0f,
                     CriticalChance = 0f,
-                    IsActive = true,
+                    IsActive = false,  // ← 수정: 기본적으로 비활성화
                     IsReusable = true
                 },
                 new TouchFunctionDataModel
@@ -98,7 +98,7 @@ namespace ClickerGame.Gameplay
                     Duration = 60f,
                     Cooldown = 300f,
                     CriticalChance = 0f,
-                    IsActive = true,
+                    IsActive = false,  // ← 수정: 기본적으로 비활성화
                     IsReusable = true
                 }
             };
