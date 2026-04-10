@@ -77,10 +77,17 @@ namespace ClickerGame.UI
                 descriptionText.text = _data.Description;
             
             if (costText != null)
-                costText.text = $"{_data.Cost} pts";
-            
-            if (levelText != null)
-                levelText.text = $"Lv. {_data.Level}";
+            {
+                // 활성화된 함수는 레벨 표시, 아니면 비용 표시
+                if (_isActive)
+                {
+                    costText.text = $"Lv. {_data.Level}";
+                }
+                else
+                {
+                    costText.text = $"{_data.Cost} pts";
+                }
+            }
             
             // 활성화되면 버튼 숨기기
             if (addButton != null)

@@ -100,22 +100,34 @@ private int CalculatePointsPerClick()
                 return;
             }
             
-            if (activeFunctions.Find(f => f.ID == functionId) != null)
+            // 기존 활성화된 함수 찾기 (레벨업용)
+            var existingFunction = activeFunctions.Find(f => f.ID == functionId);
+            
+            if (existingFunction != null)
             {
-                Debug.LogWarning($"[TouchFunctionList] Function {functionId} already active!");
+                // 이미 활성화됨 → 레벨업
+                existingFunction.Level++;
+                Debug.Log($"[TouchFunctionList] Level up! {function.Name} → Lv.{existingFunction.Level}");
+                OnFunctionAdded?.Invoke(functionId);
+                SaveToExcel();
                 return;
             }
             
+            // 포인트 차감
             SpendPoints(function.Cost);
+            
+            // 새 함수 추가
             var newFunction = function.Clone();
             newFunction.IsActive = true;
+            newFunction.Level = 1;
             activeFunctions.Add(newFunction);
             
-            Debug.Log($"[TouchFunctionList] Added {function.Name} (ID: {function.ID}, Effect: {function.Effect})");
+            Debug.Log($"[TouchFunctionList] Added {function.Name} (ID: {function.ID}, Effect: {function.Effect}, Level: {newFunction.Level})");
+            Debug.Log($"[TouchFunctionList] Points remaining: {_touchPoints}");
             Debug.Log($"[TouchFunctionList] Active functions: {activeFunctions.Count}");
             foreach (var af in activeFunctions)
             {
-                Debug.Log($"  - {af.Name} (Effect: {af.Effect})");
+                Debug.Log($"  - {af.Name} (Effect: {af.Effect}, Level: {af.Level})");
             }
             
             ApplyFunctionEffect(newFunction);
