@@ -15,6 +15,9 @@ namespace ClickerGame.UI
         [SerializeField] private Button speedBoostButton;
         [SerializeField] private Button itemButton;
 
+        [Header("Panels")]
+        [SerializeField] private GameObject backgroundPanel;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -122,13 +125,20 @@ namespace ClickerGame.UI
             }
         }
 
-        public void OpenBackgroundWindow()
+public void OpenBackgroundWindow()
         {
             Debug.Log("[UIManager] Background button clicked!");
-            var bgManager = FindFirstObjectByType<BackgroundManager>();
-            if (bgManager != null)
+
+            if (backgroundPanel == null)
+                backgroundPanel = GameObject.Find("BackgroundPanel");
+
+            if (backgroundPanel != null)
             {
-                bgManager.gameObject.SetActive(!bgManager.gameObject.activeSelf);
+                backgroundPanel.SetActive(!backgroundPanel.activeSelf);
+            }
+            else
+            {
+                Debug.LogError("[UIManager] BackgroundPanel not found! Run Tools > Game > Setup Background Panel first.");
             }
         }
 

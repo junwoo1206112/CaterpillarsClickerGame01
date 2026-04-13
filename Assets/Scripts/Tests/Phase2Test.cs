@@ -53,7 +53,7 @@ namespace ClickerGame.Tests
             GameObject character = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             character.name = "TestCharacter";
             character.transform.position = new Vector3(0, 1, 0);
-            character.transform.localScale = new Vector3(2, 2, 2);
+            character.transform.localScale = new Vector3(4, 4, 4);
 
             var clickHandler = character.AddComponent<ClickHandler>();
             clickHandler.SetCharacterName("Caterpillar");

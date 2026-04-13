@@ -9,7 +9,7 @@ namespace ClickerGame.UI
         public class BackgroundItem
         {
             public string name;
-            public Sprite background;
+            public GameObject particlePrefab;
         }
         
         [Header("Backgrounds")]
@@ -18,19 +18,21 @@ namespace ClickerGame.UI
         [Header("UI")]
         [SerializeField] private Transform backgroundsGrid;
         [SerializeField] private Button closeButton;
-        
-        [Header("Target")]
-        [SerializeField] private Image targetBackground;
+
+        [Header("Particle Spawn Point")]
+        [SerializeField] private Transform particleSpawnPoint;
+
+        private GameObject _currentParticleInstance;
         
         private void RefreshBackgrounds()
         {
-            // 그리드 초기화
+            if (backgroundsGrid == null) return;
+
             foreach (Transform child in backgroundsGrid)
             {
                 Destroy(child.gameObject);
             }
             
-            // 배경 생성
             foreach (var bg in backgrounds)
             {
                 CreateBackgroundButton(bg);
@@ -55,6 +57,7 @@ namespace ClickerGame.UI
             text.text = bg.name;
             text.color = Color.white;
             text.alignment = TextAnchor.MiddleCenter;
+            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             
             RectTransform textRect = text.GetComponent<RectTransform>();
             textRect.anchorMin = Vector2.zero;
@@ -67,11 +70,53 @@ namespace ClickerGame.UI
         
         public void OnBackgroundSelected(BackgroundItem bg)
         {
-            Debug.Log($"[Background] Selected: {bg.name}");
-            
-            if (targetBackground != null && bg.background != null)
+            if (_currentParticleInstance != null)
             {
-                targetBackground.sprite = bg.background;
+                Destroy(_currentParticleInstance);
+                _currentParticleInstance = null;
+            }
+
+            if (bg.particlePrefab != null)
+            {
+                Vector3 spawnPos;
+
+                if (particleSpawnPoint != null)
+                {
+                    spawnPos = particleSpawnPoint.position;
+                }
+                else
+                {
+                    Camera cam = Camera.main;
+                    if (cam != null)
+                    {
+                        Vector3 top = cam.ViewportToWorldPoint(new Vector3(0.5f, 1f, cam.nearClipPlane + 5f));
+                        spawnPos = new Vector3(cam.transform.position.x, top.y, 0f);
+                    }
+                    else
+                    {
+                        spawnPos = new Vector3(0, 6f, 0);
+                    }
+                }
+
+                _currentParticleInstance = Instantiate(bg.particlePrefab, spawnPos, Quaternion.identity);
+
+                var ps = _currentParticleInstance.GetComponent<ParticleSystem>();
+                if (ps != null)
+                {
+                    var shape = ps.shape;
+                    shape.enabled = true;
+                    shape.shapeType = ParticleSystemShapeType.Box;
+                    shape.position = Vector3.zero;
+                    shape.scale = new Vector3(20f, 1f, 1f);
+
+                    var renderer = _currentParticleInstance.GetComponent<ParticleSystemRenderer>();
+                    if (renderer != null)
+                    {
+                        renderer.sortingOrder = 5;
+                    }
+                }
+
+                Debug.Log($"[Background] Particle spawned: {bg.particlePrefab.name}");
             }
             
             OnCloseClicked();

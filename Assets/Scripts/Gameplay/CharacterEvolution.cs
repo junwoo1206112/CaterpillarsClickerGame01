@@ -17,6 +17,9 @@ namespace ClickerGame.Gameplay
         public UnityEvent<int> OnEvolution;
         public UnityEvent<string> OnEvolutionNameChanged;
 
+        [Header("Evolution Particle")]
+        [SerializeField] private GameObject evolutionParticlePrefab;
+
         private int _currentStage = 1;
         private int _totalTouchCount = 0;
         private SpriteRenderer _spriteRenderer;
@@ -47,9 +50,9 @@ namespace ClickerGame.Gameplay
         {
             _evolutionStages = new List<EvolutionStageDataModel>
             {
-                new EvolutionStageDataModel { ID = "1", Name = "애벌레", TouchRequired = 0, SpritePath = "Sprites/Characters/caterpillar", Scale = new Vector3(1, 1, 1) },
-                new EvolutionStageDataModel { ID = "2", Name = "번데기", TouchRequired = 1000, SpritePath = "Sprites/Characters/cocoon", Scale = new Vector3(1, 1, 1) },
-                new EvolutionStageDataModel { ID = "3", Name = "나비", TouchRequired = 3000, SpritePath = "Sprites/Characters/butterfly", Scale = new Vector3(1, 1, 1) }
+                new EvolutionStageDataModel { ID = "1", Name = "애벌레", TouchRequired = 0, SpritePath = "Sprites/Characters/caterpillar", Scale = new Vector3(2, 2, 2) },
+                new EvolutionStageDataModel { ID = "2", Name = "번데기", TouchRequired = 1000, SpritePath = "Sprites/Characters/cocoon", Scale = new Vector3(2, 2, 2) },
+                new EvolutionStageDataModel { ID = "3", Name = "나비", TouchRequired = 3000, SpritePath = "Sprites/Characters/butterfly", Scale = new Vector3(2, 2, 2) }
             };
             Debug.Log($"[CharacterEvolution] Using default evolution stages with sprite paths");
             UpdateStage(1);
@@ -72,8 +75,13 @@ namespace ClickerGame.Gameplay
             }
             else
             {
-                // 기존 SpriteRenderer 찾기
-                _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+                // Visual이라는 이름의 자식에서 SpriteRenderer 찾기
+                Transform visualChild = transform.Find("Visual");
+                if (visualChild != null)
+                {
+                    _spriteRenderer = visualChild.GetComponent<SpriteRenderer>();
+                    Debug.Log($"[CharacterEvolution] Found SpriteRenderer in Visual child");
+                }
                 
                 if (_spriteRenderer == null)
                 {
@@ -82,7 +90,7 @@ namespace ClickerGame.Gameplay
                     spriteObj.transform.SetParent(transform);
                     spriteObj.transform.localPosition = Vector3.zero;
                     spriteObj.transform.localRotation = Quaternion.identity;
-                    spriteObj.transform.localScale = Vector3.one;
+                    spriteObj.transform.localScale = new Vector3(2, 2, 2);
                     _spriteRenderer = spriteObj.AddComponent<SpriteRenderer>();
                     Debug.Log("[CharacterEvolution] Created new SpriteRenderer");
                 }
@@ -145,6 +153,8 @@ namespace ClickerGame.Gameplay
                 // 이벤트로 이름 알림 (GameUI 가 받아서 표시)
                 Debug.Log($"[CharacterEvolution] Invoking OnEvolutionNameChanged: {data.Name}");
                 OnEvolutionNameChanged?.Invoke(data.Name);
+
+                PlayEvolutionParticle();
             }
             else
             {
@@ -164,6 +174,30 @@ namespace ClickerGame.Gameplay
             }
 
             return null;
+        }
+
+        private void PlayEvolutionParticle()
+        {
+            if (_currentStage <= 1) return;
+
+            if (evolutionParticlePrefab == null)
+            {
+                Debug.LogWarning("[CharacterEvolution] evolutionParticlePrefab is not assigned");
+                return;
+            }
+
+            Vector3 spawnPos = transform.position;
+            GameObject particleObj = Instantiate(evolutionParticlePrefab, spawnPos, Quaternion.identity);
+            var ps = particleObj.GetComponent<ParticleSystem>();
+            if (ps != null)
+            {
+                Destroy(particleObj, ps.main.duration + 0.5f);
+            }
+            else
+            {
+                Destroy(particleObj, 3f);
+            }
+            Debug.Log("[CharacterEvolution] Evolution particle played");
         }
 
         private void SetSpriteByPath(string spritePath)

@@ -132,7 +132,7 @@ namespace ClickerGame.EditorTools
                 obj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 obj.name = "Player";
                 obj.transform.position = new Vector3(0, 0, 5);
-                obj.transform.localScale = new Vector3(2, 2, 2);
+                obj.transform.localScale = new Vector3(4, 4, 4);
 
                 obj.AddComponent<ClickHandler>();
                 obj.AddComponent<CharacterEvolution>();
