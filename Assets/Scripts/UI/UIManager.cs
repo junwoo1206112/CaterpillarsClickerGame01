@@ -17,6 +17,7 @@ namespace ClickerGame.UI
 
         [Header("Panels")]
         [SerializeField] private GameObject backgroundPanel;
+        [SerializeField] private GameObject characterCustomizePanel;
 
         private void Awake()
         {
@@ -118,10 +119,17 @@ namespace ClickerGame.UI
         public void OpenCharacterCustomizeWindow()
         {
             Debug.Log("[UIManager] Character customize button clicked!");
-            var customizeManager = FindFirstObjectByType<CharacterCustomizeManager>();
-            if (customizeManager != null)
+
+            if (characterCustomizePanel == null)
+                characterCustomizePanel = GameObject.Find("CharacterCustomizePanel");
+
+            if (characterCustomizePanel != null)
             {
-                customizeManager.gameObject.SetActive(!customizeManager.gameObject.activeSelf);
+                characterCustomizePanel.SetActive(!characterCustomizePanel.activeSelf);
+            }
+            else
+            {
+                Debug.LogError("[UIManager] CharacterCustomizePanel not found! Run Tools > Game > Setup Character Customize Panel first.");
             }
         }
 
