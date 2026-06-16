@@ -26,3 +26,9 @@ sysinfo.txt
 *.apk
 *.aab
 *.unitypackage
+
+.idea/
+.vscode/
+.opencode/
+*.userprefs
+nul
